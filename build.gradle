@@ -1,7 +1,7 @@
 apply from: 'dependencies.gradle'
 
-// parent and child project all use this config
-allprojects {
+// child project all use this config
+subprojects {
   apply plugin: 'java'
   apply plugin: 'maven'
 
@@ -43,3 +43,4 @@ allprojects {
     testImplementation libs['hamcrest-lib']
   }
 }
+
