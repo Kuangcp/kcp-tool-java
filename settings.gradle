@@ -1,0 +1,3 @@
+rootProject.name = 'kcp-tool-java'
+
+include('kcp-tuple')
