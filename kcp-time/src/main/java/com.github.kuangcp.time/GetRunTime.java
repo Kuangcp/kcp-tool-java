@@ -14,7 +14,7 @@ public enum GetRunTime {
   private long startRecord;
 
   public void startCount() {
-    startRecord = Instant.now().toEpochMilli();
+    startRecord = System.currentTimeMillis();
   }
 
   /**
@@ -23,7 +23,7 @@ public enum GetRunTime {
    * @param info 要输出的提示字符串
    */
   public void endCount(String info) {
-    long end = Instant.now().toEpochMilli();
+    long end = System.currentTimeMillis();
     long totalMillis = end - startRecord;
     long ms = totalMillis, sec, min, hour;
 
