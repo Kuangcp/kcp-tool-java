@@ -1,8 +1,9 @@
-package com.github.kuangcp;
+package com.github.kuangcp.tuple;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
+import com.github.kuangcp.tuple.Pair;
 import org.junit.Test;
 
 /**

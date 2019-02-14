@@ -1,3 +1,8 @@
 rootProject.name = 'kcp-tool-java'
 
-include('kcp-tuple', 'kcp-tool')
+include(
+    'kcp-tuple'
+    , 'kcp-tool'
+    , 'kcp-math'
+    , 'kcp-time'
+)

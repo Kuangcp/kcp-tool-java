@@ -1,6 +1,6 @@
-package com.github.kuangcp;
+package com.github.kuangcp.tuple;
 
-import com.github.kuangcp.base.Tuple;
+import com.github.kuangcp.tuple.base.Tuple;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Data;

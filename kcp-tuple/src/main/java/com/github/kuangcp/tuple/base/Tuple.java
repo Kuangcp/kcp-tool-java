@@ -1,4 +1,4 @@
-package com.github.kuangcp.base;
+package com.github.kuangcp.tuple.base;
 
 import java.io.Serializable;
 import java.util.Objects;
