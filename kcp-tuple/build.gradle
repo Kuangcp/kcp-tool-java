@@ -3,8 +3,6 @@ plugins {
   id 'java-library'
 }
 
-version = '1.0.0'
-
 dependencies {
   libs['cglib']
 }
