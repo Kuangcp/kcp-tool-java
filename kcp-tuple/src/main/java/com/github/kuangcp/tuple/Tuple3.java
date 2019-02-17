@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Triplet<A, B, C> extends Tuple {
+public class Tuple3<A, B, C> extends Tuple {
 
   private A first;
 
@@ -20,16 +20,20 @@ public class Triplet<A, B, C> extends Tuple {
 
   private C third;
 
-  public static <A, B, C> Triplet<A, B, C> of(A first, B second, C third) {
-    return new Triplet<>(first, second, third);
+  public static <A, B, C> Tuple3<A, B, C> of(A first, B second, C third) {
+    return new Tuple3<>(first, second, third);
   }
 
   @Override
   public Object[] getValueArray() {
-    if (Objects.isNull(array)) {
-      array = new Object[]{first, second, third};
+    if (Objects.isNull(contents)) {
+      contents = new Object[]{first, second, third};
     }
 
-    return array;
+    return contents;
+  }
+
+  public <D> Tuple4<A, B, C, D> addData(D data) {
+    return new Tuple4<>(first, second, third, data);
   }
 }

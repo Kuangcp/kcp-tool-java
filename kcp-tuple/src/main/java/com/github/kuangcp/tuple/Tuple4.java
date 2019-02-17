@@ -12,7 +12,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Quartet<A, B, C, D> extends Tuple {
+public class Tuple4<A, B, C, D> extends Tuple {
 
   private A first;
 
@@ -22,16 +22,16 @@ public class Quartet<A, B, C, D> extends Tuple {
 
   private D fourth;
 
-  public static <A, B, C, D> Quartet<A, B, C, D> of(A first, B second, C third, D fourth) {
-    return new Quartet<>(first, second, third, fourth);
+  public static <A, B, C, D> Tuple4<A, B, C, D> of(A first, B second, C third, D fourth) {
+    return new Tuple4<>(first, second, third, fourth);
   }
 
   @Override
   public Object[] getValueArray() {
-    if (Objects.isNull(array)) {
-      array = new Object[]{first, second, third, fourth};
+    if (Objects.isNull(contents)) {
+      contents = new Object[]{first, second, third, fourth};
     }
 
-    return array;
+    return contents;
   }
 }
