@@ -1,19 +1,15 @@
 package com.github.kuangcp.math.number;
 
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by Myth on 2017/3/21
  * 将浮点数转换成分数，并提供相关操作方法 貌似是不可行的
  * 最多是给定一个0.3（3）指定循环部分可以求出分数
  * 使用两个字符串分别表示分子和分母来计算,提供加减乘除以及化简的方法
- *
- *
- * 使用Integer就确定了是最长11位的整数长度
- * 改成数值了，还使用符号的标记是为了啥，真是可以了。
- *
- * TODO 参考别人实现 学习利弊
  */
+@Slf4j
 public class Fraction {
 
   private Integer numerator;
@@ -292,5 +288,4 @@ public class Fraction {
     result.setNumerator(temp);
     return result;
   }
-
 }
