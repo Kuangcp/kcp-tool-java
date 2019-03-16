@@ -2,7 +2,7 @@ apply from: 'dependencies.gradle'
 
 // child project all use this config
 subprojects {
-  apply plugin: 'java'
+  apply plugin: 'java-library'
   apply plugin: 'maven'
 
   group = 'com.github.kuangcp'

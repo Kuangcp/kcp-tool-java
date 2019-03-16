@@ -1,5 +1,5 @@
 dependencies {
-  implementation project(':kcp-core')
-  implementation project(':kcp-tuple')
-  implementation project(':kcp-math')
+  api project(':kcp-core')
+  api project(':kcp-tuple')
+  api project(':kcp-math')
 }

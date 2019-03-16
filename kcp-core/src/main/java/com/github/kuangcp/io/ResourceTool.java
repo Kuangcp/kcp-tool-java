@@ -1,4 +1,4 @@
-package com.github.kuangcp.resources;
+package com.github.kuangcp.io;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.util.Objects;
  *
  * @author kuangcp on 3/16/19-7:20 PM
  */
-public class ResourcesTool {
+public class ResourceTool {
 
   public static void close(Closeable... resources) throws IOException {
     if (Objects.isNull(resources)) {

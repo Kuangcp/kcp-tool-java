@@ -1,4 +1,4 @@
-package com.github.kuangcp.resources;
+package com.github.kuangcp.io;
 
 import org.junit.Test;
 
@@ -11,6 +11,6 @@ public class ResourcesToolTest {
 
   @Test
   public void testClose() throws Exception {
-    ResourcesTool.close(null, null, null);
+    ResourceTool.close(null, null, null);
   }
 }
