@@ -1,6 +1,7 @@
 package com.github.kuangcp.time;
 
 import java.security.MessageDigest;
+import java.util.concurrent.TimeUnit;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ import org.junit.Test;
 @Ignore
 public class GetRunTimeTest {
 
-  private GetRunTime getRunTime = GetRunTime.GET_RUN_TIME;
+  private GetRunTime getRunTime = new GetRunTime();
 
   @Test
   public void testStartCount() {
@@ -36,7 +37,7 @@ public class GetRunTimeTest {
    * Java 内置md5加密
    */
   private static void MD5(String s) {
-    char hexDigits[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+    char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
         'F'};
 
     try {
@@ -49,7 +50,7 @@ public class GetRunTimeTest {
       byte[] md = mdInst.digest();
       // 把密文转换成十六进制的字符串形式
       int j = md.length;
-      char str[] = new char[j * 2];
+      char[] str = new char[j * 2];
       int k = 0;
       for (byte byte0 : md) {
         str[k++] = hexDigits[byte0 >>> 4 & 0xf];
@@ -62,9 +63,24 @@ public class GetRunTimeTest {
   }
 
   @Test
-  public void testCount() {
+  public void testSimple() {
     getRunTime.startCount();
     getRunTime.endCountOneLine("end count");
+    getRunTime.endCount();
   }
 
+  @Test
+  public void testMultiple() {
+    for (int i = 0; i < 10; i++) {
+      int finalI = i;
+      new Thread(() -> {
+        new GetRunTime().startCount().endWithDebug(finalI + "");
+        try {
+          TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }).start();
+    }
+  }
 }

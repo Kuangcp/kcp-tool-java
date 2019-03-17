@@ -3,28 +3,20 @@ package com.github.kuangcp.time;
 import java.time.Instant;
 
 /**
- * 获取语句运行时间的类，实例化一次后，可多次使用 使用枚举类实现单例模式, 简单安全 2018-06-14 16:54:12
- *
  * @author Myth on 2016年9月29日 下午7:47:35
  */
-public enum GetRunTime {
+public class GetRunTime {
 
-  GET_RUN_TIME;
+  private long start;
 
-  private long startRecord;
-
-  public void startCount() {
-    startRecord = System.currentTimeMillis();
+  public GetRunTime startCount() {
+    start = System.currentTimeMillis();
+    return this;
   }
 
-  /**
-   * 输出耗费时间
-   *
-   * @param info 要输出的提示字符串
-   */
   public void endCount(String info) {
     long end = System.currentTimeMillis();
-    long totalMillis = end - startRecord;
+    long totalMillis = end - start;
     long ms = totalMillis, sec, min, hour;
 
     hour = ms / 3600_000;
@@ -39,10 +31,41 @@ public enum GetRunTime {
     System.out.println(String.format(format, info, totalMillis, hour, min, sec, ms));
   }
 
+  public void endCount() {
+    long end = System.currentTimeMillis();
+    long totalMillis = end - start;
+    long ms = totalMillis, sec, min, hour;
+
+    hour = ms / 3600_000;
+    ms -= hour * 3600_000;
+    min = ms / 60_000;
+    ms -= min * 60_000;
+    sec = ms / 1_000;
+    ms -= sec * 1_000;
+
+    String format = "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁\n"
+        + "▌  Total: %-3sms\n▌ Format: %sh %sm %ss %sms\n";
+    System.out.println(String.format(format, totalMillis, hour, min, sec, ms));
+  }
+
   public void endCountOneLine(String info) {
     long end = Instant.now().toEpochMilli();
-    long totalMillis = end - startRecord;
+    long totalMillis = end - start;
     String format = "Total:%6sms, Info: %s";
     System.out.println(String.format(format, totalMillis, info));
+  }
+
+  public void endCountOneLine() {
+    long end = Instant.now().toEpochMilli();
+    long totalMillis = end - start;
+    String format = "Total:%6sms";
+    System.out.println(String.format(format, totalMillis));
+  }
+
+  protected void endWithDebug(String info) {
+    long end = Instant.now().toEpochMilli();
+    long totalMillis = end - start;
+    String format = "Total:%6sms, %s Info: %s";
+    System.out.println(String.format(format, totalMillis, start, info));
   }
 }
