@@ -1,6 +1,7 @@
 package com.github.kuangcp.math.number;
 
 import java.util.regex.Pattern;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -8,12 +9,16 @@ import lombok.extern.slf4j.Slf4j;
  * TODO 将浮点数转换成分数，并提供相关操作方法 貌似是不可行的
  * 最多是给定一个0.3（3）指定循环部分可以求出分数
  * 使用两个字符串分别表示分子和分母来计算,提供加减乘除以及化简的方法
+ *
+ * http://commons.apache.org/proper/commons-math/userguide/fraction.html
+ * https://codereview.stackexchange.com/questions/43084/java-fraction-calculator
+ * https://stackoverflow.com/questions/474535/best-way-to-represent-a-fraction-in-java
  */
+@Data
 @Slf4j
 public class Fraction extends Number implements Comparable<Fraction> {
 
   private static Pattern pattern = Pattern.compile("^-?[0-9]*\\.?[0-9]*$");
-
 
   private Integer numerator;
   private Integer denominator;
@@ -191,17 +196,11 @@ public class Fraction extends Number implements Comparable<Fraction> {
   }
 
   public boolean isZero() {
-    if (this.isInfinity()) {
-      return false;
-    }
-    return this.getNumerator() == 0;
+    return doubleValue() == 0.0;
   }
 
   public boolean isOne() {
-    if (this.isInfinity() || this.isZero()) {
-      return false;
-    }
-    return this.getNumerator().equals(this.getDenominator());
+    return doubleValue() == 1.0;
   }
 
   public boolean isInteger() {
@@ -233,30 +232,14 @@ public class Fraction extends Number implements Comparable<Fraction> {
     return this;
   }
 
-  public Integer getNumerator() {
-    return numerator;
-  }
-
-  public void setNumerator(Integer numerator) {
-    this.numerator = numerator;
-  }
-
-  public Integer getDenominator() {
-    return denominator;
-  }
-
-  public void setDenominator(Integer denominator) {
-    this.denominator = denominator;
-  }
-
   @Override
   public String toString() {
-    if (this.isInteger()) {
+    if (this.isInteger() || isZero()) {
       return numerator + " ";
     } else if (this.isInfinity()) {
       return "Infinity";
     } else {
-      return "" + numerator + "/" + denominator + " ";
+      return numerator + "/" + denominator + " ";
     }
   }
 
@@ -273,12 +256,20 @@ public class Fraction extends Number implements Comparable<Fraction> {
     if (this == target) {
       return true;
     }
-    if (target == null || getClass() != target.getClass()) {
+    if (target == null) {
       return false;
     }
 
-    Fraction fraction = (Fraction) target;
-    return this.compareTo(fraction) == 0;
+    if (getClass() == target.getClass()) {
+      Fraction fraction = (Fraction) target;
+      return this.compareTo(fraction) == 0;
+    }
+
+    if (target instanceof Number) {
+      Number number = (Number) target;
+      return number.doubleValue() == this.doubleValue();
+    }
+    return false;
   }
 
   @Override

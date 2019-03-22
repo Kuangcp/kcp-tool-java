@@ -32,4 +32,22 @@ public class FractionTest {
     assertThat(one.add(two), equalTo(new Fraction(-3, 10)));
     log.info("{} {} {}", one.simplify(), two.simplify(), one.add(two).simplify());
   }
+
+  @Test
+  public void testSimplify(){
+    Fraction fraction = new Fraction(12, 3);
+
+    assertThat(fraction, equalTo(4.0000f));
+
+    assertThat(new Fraction(0, 1), equalTo(0));
+    assertThat(new Fraction(0, 1).isZero(), equalTo(true));
+
+    assertThat(new Fraction(1, 0).isInfinity(), equalTo(true));
+    assertThat(new Fraction(1, 0), equalTo(Double.POSITIVE_INFINITY));
+    assertThat(new Fraction(-1, 0), equalTo(Double.NEGATIVE_INFINITY));
+
+    //    assertThat(1/0, equalTo(Double.POSITIVE_INFINITY));
+
+  }
+
 }
