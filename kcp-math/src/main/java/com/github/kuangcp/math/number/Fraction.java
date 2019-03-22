@@ -5,15 +5,47 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by Myth on 2017/3/21
- * 将浮点数转换成分数，并提供相关操作方法 貌似是不可行的
+ * TODO 将浮点数转换成分数，并提供相关操作方法 貌似是不可行的
  * 最多是给定一个0.3（3）指定循环部分可以求出分数
  * 使用两个字符串分别表示分子和分母来计算,提供加减乘除以及化简的方法
  */
 @Slf4j
-public class Fraction {
+public class Fraction extends Number implements Comparable<Fraction> {
+
+  private static Pattern pattern = Pattern.compile("^-?[0-9]*\\.?[0-9]*$");
+
 
   private Integer numerator;
   private Integer denominator;
+
+  /**
+   * init a fraction by string  ag: -12.3434
+   */
+  public static Fraction valueOf(String num) {
+    boolean matches = pattern.matcher(num).matches();
+    if (!matches) {
+      throw new RuntimeException("this num is infinity: " + num);
+    }
+
+    String[] numberArray = num.split("\\.");
+    Fraction fraction = new Fraction();
+
+    int numerator = Integer.parseInt(numberArray[0]);
+    if (numberArray.length == 1) {
+      fraction.changeToOne().setNumerator(numerator);
+    } else {
+      int decimalDigits = numberArray[1].length();
+      int decimal = Integer.parseInt(numberArray[1]);
+      if (numerator < 0) {
+        decimal *= -1;
+      }
+
+      int denominator = (int) Math.pow(10.0, decimalDigits);
+      fraction.setNumerator(numerator * denominator + decimal);
+      fraction.setDenominator(denominator);
+    }
+    return fraction.simplify();
+  }
 
   private Fraction() {
   }
@@ -39,38 +71,9 @@ public class Fraction {
     this.denominator = 1;
   }
 
-  /**
-   * init a fraction by string  ag: -12.3434
-   */
-  public static Fraction valueOf(String num) {
-    boolean matches = Pattern.matches("^-?[0-9]*\\.?[0-9]*$", num);
-    if (!matches) {
-      throw new RuntimeException("this num is infinity: " + num);
-    }
-
-    String[] numberArray = num.split("\\.");
-    Fraction fraction = new Fraction();
-
-    int numerator = Integer.parseInt(numberArray[0]);
-    if (numberArray.length == 1) {
-      fraction.changeToOne().setNumerator(numerator);
-    } else {
-      int decimalDigits = numberArray[1].length();
-      int decimal = Integer.parseInt(numberArray[1]);
-      if (numerator < 0) {
-        decimal *= -1;
-      }
-
-      int denominator = (int) Math.pow(10.0, decimalDigits);
-      fraction.setNumerator(numerator * denominator + decimal);
-      fraction.setDenominator(denominator);
-    }
-    return fraction.reductionOfFraction();
-  }
-
   public Fraction add(Fraction other) {
-    this.reductionOfFraction();
-    other.reductionOfFraction();
+    this.simplify();
+    other.simplify();
     Fraction result;
 
     if (other.isInfinity() || this.isInfinity()) {
@@ -85,7 +88,7 @@ public class Fraction {
           + this.getDenominator() * other.getNumerator();
       result = new Fraction(numerator, this.getDenominator() * other.getDenominator());
     }
-    return result.reductionOfFraction();
+    return result.simplify();
   }
 
   public Fraction add(Integer other) {
@@ -105,7 +108,7 @@ public class Fraction {
     result.setNumerator(this.getNumerator() * other.getNumerator());
     result.setDenominator(this.getDenominator() * other.getDenominator());
 
-    return result.reductionOfFraction();
+    return result.simplify();
   }
 
   public Fraction multiply(Integer other) {
@@ -143,15 +146,15 @@ public class Fraction {
     return divide(new Fraction(other));
   }
 
-  public boolean isMoreThan(Fraction other) {
-    return this.subtract(other).isPositive();
+  public boolean isGreaterThan(Fraction other) {
+    return this.compareTo(other) > 0;
   }
 
-  public boolean isMoreThan(Integer other) {
-    return isMoreThan(new Fraction(other));
+  public boolean isGreaterThan(Integer other) {
+    return isGreaterThan(new Fraction(other));
   }
 
-  public Fraction reductionOfFraction() {
+  public Fraction simplify() {
     if (this.isInfinity() || this.isZero()) {
       return this;
     }
@@ -163,7 +166,6 @@ public class Fraction {
     Integer numerator = this.getNumerator();
 
     Integer temp;
-    //辗转相除来计算公约数
     while (denominator != 0) {
       temp = numerator % denominator;
       numerator = denominator;
@@ -184,7 +186,8 @@ public class Fraction {
     if (this.isInfinity() || this.isZero()) {
       return false;
     }
-    return this.getNumerator() > 0 && this.getDenominator() > 0;
+    return this.getNumerator() > 0 && this.getDenominator() > 0
+        || this.getNumerator() < 0 && this.getDenominator() < 0;
   }
 
   public boolean isZero() {
@@ -257,21 +260,25 @@ public class Fraction {
     }
   }
 
+  private Fraction reverseNumeratorAndDenominator(Fraction target) {
+    Fraction result = new Fraction();
+    Integer temp = target.getDenominator();
+    result.setDenominator(target.getNumerator());
+    result.setNumerator(temp);
+    return result;
+  }
+
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
+  public boolean equals(Object target) {
+    if (this == target) {
       return true;
     }
-    if (o == null || getClass() != o.getClass()) {
+    if (target == null || getClass() != target.getClass()) {
       return false;
     }
 
-    Fraction fraction = (Fraction) o;
-
-    if (!numerator.equals(fraction.numerator)) {
-      return false;
-    }
-    return denominator.equals(fraction.denominator);
+    Fraction fraction = (Fraction) target;
+    return this.compareTo(fraction) == 0;
   }
 
   @Override
@@ -281,11 +288,41 @@ public class Fraction {
     return result;
   }
 
-  private Fraction reverseNumeratorAndDenominator(Fraction target) {
-    Fraction result = new Fraction();
-    Integer temp = target.getDenominator();
-    result.setDenominator(target.getNumerator());
-    result.setNumerator(temp);
-    return result;
+  public byte byteValue() {
+    return (byte) this.doubleValue();
   }
+
+  public double doubleValue() {
+    return ((double) numerator) / ((double) denominator);
+  }
+
+  public float floatValue() {
+    return (float) this.doubleValue();
+  }
+
+  public int intValue() {
+    return (int) this.doubleValue();
+  }
+
+  public long longValue() {
+    return (long) this.doubleValue();
+  }
+
+  public short shortValue() {
+    return (short) this.doubleValue();
+  }
+
+  @Override
+  public int compareTo(Fraction fraction) {
+    long self = this.getNumerator() * fraction.getDenominator();
+    long other = fraction.getNumerator() * this.getDenominator();
+
+    if (self > other) {
+      return 1;
+    } else if (other > self) {
+      return -1;
+    }
+    return 0;
+  }
+
 }
