@@ -2,6 +2,9 @@ package com.github.kuangcp.math.number;
 
 import java.util.regex.Pattern;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -14,8 +17,9 @@ import lombok.extern.slf4j.Slf4j;
  * https://codereview.stackexchange.com/questions/43084/java-fraction-calculator
  * https://stackoverflow.com/questions/474535/best-way-to-represent-a-fraction-in-java
  */
-@Data
 @Slf4j
+@Getter
+@Setter
 public class Fraction extends Number implements Comparable<Fraction> {
 
   private static Pattern pattern = Pattern.compile("^-?[0-9]*\\.?[0-9]*$");
@@ -131,7 +135,7 @@ public class Fraction extends Number implements Comparable<Fraction> {
     return add(fraction);
   }
 
-  public Fraction substract(Integer other) {
+  public Fraction subtract(Integer other) {
     return subtract(new Fraction(other));
   }
 
