@@ -37,7 +37,7 @@ public class Fraction extends Number implements Comparable<Fraction> {
 
     int numerator = Integer.parseInt(numberArray[0]);
     if (numberArray.length == 1) {
-      fraction.changeToOne().setNumerator(numerator);
+      fraction.toOne().setNumerator(numerator);
     } else {
       int decimalDigits = numberArray[1].length();
       int decimal = Integer.parseInt(numberArray[1]);
@@ -50,6 +50,10 @@ public class Fraction extends Number implements Comparable<Fraction> {
       fraction.setDenominator(denominator);
     }
     return fraction.simplify();
+  }
+
+  private static Fraction reversed(Fraction target) {
+    return new Fraction(target.getDenominator(), target.getNumerator());
   }
 
   private Fraction() {
@@ -68,9 +72,6 @@ public class Fraction extends Number implements Comparable<Fraction> {
     this.denominator = denominator;
   }
 
-  /**
-   * init a integer
-   */
   public Fraction(Integer numerator) {
     this.numerator = numerator;
     this.denominator = 1;
@@ -82,7 +83,7 @@ public class Fraction extends Number implements Comparable<Fraction> {
     Fraction result;
 
     if (other.isInfinity() || this.isInfinity()) {
-      return new Fraction().changeToInfinity();
+      return new Fraction().toInfinity();
     }
 
     if (this.getDenominator().equals(other.getDenominator())) {
@@ -103,11 +104,11 @@ public class Fraction extends Number implements Comparable<Fraction> {
   public Fraction multiply(Fraction other) {
     Fraction result = new Fraction();
     if (this.getNumerator() == 0 || other.getNumerator() == 0) {
-      return result.changeToZero();
+      return result.toZero();
     }
 
     if (this.getDenominator() == 0 || other.getDenominator() == 0) {
-      return result.changeToInfinity();
+      return result.toInfinity();
     }
 
     result.setNumerator(this.getNumerator() * other.getNumerator());
@@ -137,13 +138,13 @@ public class Fraction extends Number implements Comparable<Fraction> {
   public Fraction divide(Fraction other) {
     Fraction result = new Fraction(other);
     if (this.isZero()) {
-      return result.changeToZero();
+      return result.toZero();
     }
 
     if (this.isInfinity() || other.isInfinity() || other.isZero()) {
-      return result.changeToInfinity();
+      return result.toInfinity();
     }
-    result = reverseNumeratorAndDenominator(other);
+    result = reversed(other);
     return multiply(result);
   }
 
@@ -164,7 +165,7 @@ public class Fraction extends Number implements Comparable<Fraction> {
       return this;
     }
     if (this.isOne()) {
-      return this.changeToOne();
+      return this.toOne();
     }
 
     Integer denominator = this.getDenominator();
@@ -214,22 +215,16 @@ public class Fraction extends Number implements Comparable<Fraction> {
     return this.getDenominator() == 0;
   }
 
-  public Fraction changeToZero() {
-    this.setNumerator(0);
-    this.setDenominator(1);
-    return this;
+  public Fraction toZero() {
+    return setValue(0, 1);
   }
 
-  public Fraction changeToOne() {
-    this.setNumerator(1);
-    this.setDenominator(1);
-    return this;
+  public Fraction toOne() {
+    return setValue(1, 1);
   }
 
-  public Fraction changeToInfinity() {
-    this.setNumerator(0);
-    this.setDenominator(0);
-    return this;
+  public Fraction toInfinity() {
+    return setValue(0, 0);
   }
 
   @Override
@@ -241,14 +236,6 @@ public class Fraction extends Number implements Comparable<Fraction> {
     } else {
       return numerator + "/" + denominator + " ";
     }
-  }
-
-  private Fraction reverseNumeratorAndDenominator(Fraction target) {
-    Fraction result = new Fraction();
-    Integer temp = target.getDenominator();
-    result.setDenominator(target.getNumerator());
-    result.setNumerator(temp);
-    return result;
   }
 
   @Override
@@ -279,26 +266,32 @@ public class Fraction extends Number implements Comparable<Fraction> {
     return result;
   }
 
+  @Override
   public byte byteValue() {
     return (byte) this.doubleValue();
   }
 
+  @Override
   public double doubleValue() {
     return ((double) numerator) / ((double) denominator);
   }
 
+  @Override
   public float floatValue() {
     return (float) this.doubleValue();
   }
 
+  @Override
   public int intValue() {
     return (int) this.doubleValue();
   }
 
+  @Override
   public long longValue() {
     return (long) this.doubleValue();
   }
 
+  @Override
   public short shortValue() {
     return (short) this.doubleValue();
   }
@@ -316,4 +309,9 @@ public class Fraction extends Number implements Comparable<Fraction> {
     return 0;
   }
 
+  private Fraction setValue(Integer numerator, Integer denominator) {
+    this.numerator = numerator;
+    this.denominator = denominator;
+    return this;
+  }
 }
