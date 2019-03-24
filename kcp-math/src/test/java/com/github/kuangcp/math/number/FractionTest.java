@@ -24,17 +24,23 @@ public class FractionTest {
     assertThat(Fraction.valueOf("3.31342423").doubleValue(), equalTo(331342423 / 10000_0000.0));
 
   }
+
   @Test
-  public void testAdd(){
+  public void testAdd() {
     Fraction one = Fraction.valueOf("3.2");
     Fraction two = Fraction.valueOf("-3.5");
 
     assertThat(one.add(two), equalTo(new Fraction(-3, 10)));
     log.info("{} {} {}", one.simplify(), two.simplify(), one.add(two).simplify());
+
+    assertThat(new Fraction(2, 3).add(new Fraction(4, 3)), equalTo(2));
+
+    assertThat(new Fraction(2, 3).add(new Fraction(4, 3)), equalTo(new Fraction(6, 3)));
+
   }
 
   @Test
-  public void testSimplify(){
+  public void testSimplify() {
     Fraction fraction = new Fraction(12, 3);
 
     assertThat(fraction, equalTo(4.0000f));
@@ -50,4 +56,43 @@ public class FractionTest {
 
   }
 
+  @Test
+  public void testSubtract() {
+    assertThat(new Fraction(10, 3).subtract(new Fraction(4, 3)), equalTo(new Fraction(6, 3)));
+  }
+
+  @Test
+  public void testDivide() {
+    Fraction result = new Fraction(25, 1).divide(new Fraction(0, 3));
+    assertThat(result, equalTo(Fraction.INFINITY));
+    assertThat(result, equalTo(new Fraction(0, 3)));
+    log.info("result: result={}", result);
+  }
+
+  @Test
+  public void testMulti() {
+    Fraction result = Fraction.valueOf("1.4").multiply(Fraction.valueOf("2.3"));
+    assertThat(result, equalTo(new Fraction(14 * 23, 100)));
+  }
+
+  @Test
+  public void testSimple() {
+  }
+
+  //测试比较函数
+  @Test
+  public void compare() {
+  }
+
+  @Test
+  public void testIsZero() {
+  }
+
+  @Test
+  public void testIsInfinity() {
+  }
+
+  @Test
+  public void testIsPositive() {
+  }
 }

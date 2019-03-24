@@ -1,8 +1,6 @@
 package com.github.kuangcp.math.number;
 
 import java.util.regex.Pattern;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 public class Fraction extends Number implements Comparable<Fraction> {
 
   private static Pattern pattern = Pattern.compile("^-?[0-9]*\\.?[0-9]*$");
+
+  public static final Fraction INFINITY = new Fraction().toInfinity();
 
   private Integer numerator;
   private Integer denominator;
@@ -253,7 +253,13 @@ public class Fraction extends Number implements Comparable<Fraction> {
 
     if (getClass() == target.getClass()) {
       Fraction fraction = (Fraction) target;
-      return this.compareTo(fraction) == 0;
+      if (this.isInfinity()) {
+        return fraction.isInfinity();
+      } else if (this.isZero()) {
+        return fraction.isZero();
+      } else {
+        return this.compareTo(fraction) == 0;
+      }
     }
 
     if (target instanceof Number) {
