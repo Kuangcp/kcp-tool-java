@@ -24,10 +24,12 @@
 1. gradle install -x test
 
 ## 引入依赖
-`Gradle`  
-`implementation 'com.github.kuangcp:kcp-tool:x.y.z'`
+**`Gradle`**  
+```groovy
+    implementation 'com.github.kuangcp:kcp-tool:x.y.z'
+```
 
-`Maven`
+**`Maven`**
 ```xml
     <dependency>
       <groupId>com.github.kuangcp</groupId>
