@@ -20,18 +20,19 @@
 > [使用说明](https://gitee.com/gin9/MavenRepos)
 
 ### 手动安装
-- git clone https://gitee.com/gin9/kcp-tool-java.git
-- gradle install -x test
+1. git clone --depth 1 https://gitee.com/gin9/kcp-tool-java.git
+1. gradle install -x test
 
 ## 引入依赖
-`Gradle`
-`implementation 'com.github.kuangcp:kcp-tool:1.0.0'`
+`Gradle`  
+`implementation 'com.github.kuangcp:kcp-tool:x.y.z'`
 
 `Maven`
 ```xml
     <dependency>
       <groupId>com.github.kuangcp</groupId>
       <artifactId>kcp-tool</artifactId>
-      <version>1.0.0</version>
+      <version>x.y.z</version>
     </dependency>
 ```
+
