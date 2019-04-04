@@ -4,15 +4,11 @@ ext {
   ver = [
       logback    : '1.2.3',
       junit      : '4.12',
-      groovy     : '2.5.2',
       hamcrest   : '1.3',
   ]
   libs = [
       // tool
       "lombok"             : "org.projectlombok:lombok:1.18.2",
-      "common-lang"        : "org.apache.commons:commons-lang3:3.7",
-      "groovy"             : "org.codehaus.groovy:groovy-all:$ver.groovy",
-      "cglib"              : "cglib:cglib:3.2.9",
 
       // test, junit has removed hamcrest since 4.11
       "hamcrest-core"      : "org.hamcrest:hamcrest-core:$ver.hamcrest",

@@ -10,7 +10,7 @@
 |:----|:----|
 | kcp-tool  | 以下模块的总和 |
 | kcp-math  | 数学工具      |
-| kcp-time  | 时间工具      |
+| kcp-core  | 基础工具      |
 | kcp-tuple | 元组         |
 
 ## 使用
