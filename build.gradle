@@ -3,10 +3,10 @@ apply from: 'dependencies.gradle'
 // child project all use this config
 subprojects {
   apply plugin: 'java-library'
-  apply plugin: 'maven'
+  apply plugin: "maven-publish"
 
   group = 'com.github.kuangcp'
-  // all module use the same version 
+  // all module use the same version
   version = '1.0.4'
 
   // default build dir is build/ but idea compile dir is out/, i'm dislike this way
@@ -30,6 +30,21 @@ subprojects {
     }
     jcenter()
   }
+
+   // publish with source code
+   task sourceJar(type: Jar) {
+      from sourceSets.main.allJava
+   }
+   publishing {
+     publications {
+       mavenJava(MavenPublication) {
+         from components.java
+         artifact sourceJar {
+           classifier "sources"
+         }
+       }
+     }
+    }
 
   // All sub-modules add the following dependencies
   dependencies {

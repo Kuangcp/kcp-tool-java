@@ -14,8 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * init Object with default value by recursion
  *
- * @author https://github.com/kuangcp
- * @date 2019-06-13 22:08
+ * @author https://github.com/kuangcp on 2019-06-13 22:08
  */
 @Slf4j
 public class ClassToJson {
