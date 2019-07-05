@@ -7,7 +7,7 @@ subprojects {
 
   group = 'com.github.kuangcp'
   // all module use the same version 
-  version = '1.0.3'
+  version = '1.0.4'
 
   // default build dir is build/ but idea compile dir is out/, i'm dislike this way
   // dir out/ just have production/ and test/ dir

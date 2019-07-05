@@ -1,71 +1,63 @@
 package com.github.kuangcp.time;
 
-import java.time.Instant;
+import java.time.Duration;
 
 /**
  * @author Myth on 2016年9月29日 下午7:47:35
  */
 public class GetRunTime {
 
-  private long start;
+  private long startNano;
 
   public GetRunTime startCount() {
-    start = System.currentTimeMillis();
+    startNano = System.nanoTime();
     return this;
   }
 
   public void endCount(String info) {
-    long end = System.currentTimeMillis();
-    long totalMillis = end - start;
-    long ms = totalMillis, sec, min, hour;
+    long endNano = System.nanoTime();
+    long totalNanos = endNano - startNano;
+    Duration duration = Duration.ofNanos(endNano - startNano);
 
-    hour = ms / 3600_000;
-    ms -= hour * 3600_000;
-    min = ms / 60_000;
-    ms -= min * 60_000;
-    sec = ms / 1_000;
-    ms -= sec * 1_000;
+    String format = "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁\n"
+        + "▌   Info: %s\n"
+        + "▌  Total: %-3sns\n"
+        + "▌ Format: %sh %sm %ss %sms %sμs\n";
 
-    String format = "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁\n▌   Info: %s\n"
-        + "▌  Total: %-3sms\n▌ Format: %sh %sm %ss %sms\n";
-    System.out.println(String.format(format, info, totalMillis, hour, min, sec, ms));
+    System.out.println(String.format(format, info,
+        duration.getNano(), duration.toHours(), duration.toMinutes(),
+        duration.getSeconds(), duration.toMillis(), totalNanos / 1000));
   }
 
   public void endCount() {
-    long end = System.currentTimeMillis();
-    long totalMillis = end - start;
-    long ms = totalMillis, sec, min, hour;
-
-    hour = ms / 3600_000;
-    ms -= hour * 3600_000;
-    min = ms / 60_000;
-    ms -= min * 60_000;
-    sec = ms / 1_000;
-    ms -= sec * 1_000;
+    long endNano = System.nanoTime();
+    long totalNanos = endNano - startNano;
+    Duration duration = Duration.ofNanos(endNano - startNano);
 
     String format = "▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁\n"
-        + "▌  Total: %-3sms\n▌ Format: %sh %sm %ss %sms\n";
-    System.out.println(String.format(format, totalMillis, hour, min, sec, ms));
+        + "▌  Total: %-3sns\n▌ Format: %sh %sm %ss %sms %sμs\n";
+    System.out.println(String.format(format, duration.getNano(), duration.toHours(),
+        duration.toMinutes(), duration.getSeconds(), duration.toMillis(), totalNanos / 1000));
   }
 
   public void endCountOneLine(String info) {
-    long end = Instant.now().toEpochMilli();
-    long totalMillis = end - start;
-    String format = "Total:%6sms, Info: %s";
-    System.out.println(String.format(format, totalMillis, info));
+    long end = System.nanoTime();
+    long totalNanos = end - startNano;
+    String format = "Total:%6sns(%sms), Info: %s";
+    System.out.println(String.format(format, totalNanos, totalNanos / 1000_000, info));
   }
 
   public void endCountOneLine() {
-    long end = Instant.now().toEpochMilli();
-    long totalMillis = end - start;
-    String format = "Total:%6sms";
-    System.out.println(String.format(format, totalMillis));
+    long end = System.nanoTime();
+    long totalNanos = end - startNano;
+    String format = "Total:%6sns(%sms)";
+    System.out.println(String.format(format, totalNanos, totalNanos / 1000_000));
   }
 
   protected void endWithDebug(String info) {
-    long end = Instant.now().toEpochMilli();
-    long totalMillis = end - start;
-    String format = "Total:%6sms, %s Info: %s";
-    System.out.println(String.format(format, totalMillis, start, info));
+    long end = System.nanoTime();
+    long totalNanos = end - startNano;
+    String format = "Total:%6sns, start:%s Info: %s";
+    System.out.println(String.format(format, totalNanos, startNano, info));
   }
 }

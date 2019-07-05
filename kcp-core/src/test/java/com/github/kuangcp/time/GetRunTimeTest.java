@@ -23,14 +23,14 @@ public class GetRunTimeTest {
       a = a ^ i;
       MD5(a + "");
     }
-    getRunTime.endCount("第一个");
+    getRunTime.endCountOneLine("第一个");
 
     getRunTime.startCount();
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 10000; i++) {
       a = a ^ i;
       MD5(a + "");
     }
-    getRunTime.endCount("第二个");
+    getRunTime.endCountOneLine("第二个");
   }
 
   /**
