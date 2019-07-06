@@ -1,6 +1,8 @@
 package com.github.kuangcp.time;
 
 import java.security.MessageDigest;
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,7 +20,7 @@ public class GetRunTimeTest {
   @Test
   public void testStartCount() {
     getRunTime.startCount();
-    int a = 1888888888;
+    int a = 99999999;
     for (int i = 0; i < 100; i++) {
       a = a ^ i;
       MD5(a + "");
@@ -36,9 +38,9 @@ public class GetRunTimeTest {
   /**
    * Java 内置md5加密
    */
-  private static void MD5(String s) {
-    char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
-        'F'};
+  private static Optional<String> MD5(String s) {
+    char[] hexDigits = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+        'A', 'B', 'C', 'D', 'E', 'F'};
 
     try {
       byte[] btInput = s.getBytes();
@@ -56,10 +58,11 @@ public class GetRunTimeTest {
         str[k++] = hexDigits[byte0 >>> 4 & 0xf];
         str[k++] = hexDigits[byte0 & 0xf];
       }
-      System.out.println(str);
+      return Optional.of(Arrays.toString(str));
     } catch (Exception e) {
       e.printStackTrace();
     }
+    return Optional.empty();
   }
 
   @Test
