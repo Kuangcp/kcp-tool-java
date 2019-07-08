@@ -43,14 +43,14 @@ public class GetRunTime {
   public void endCountOneLine(String info) {
     long end = System.nanoTime();
     long totalNano = end - startNano;
-    String format = "Total:%12sns -> %6sms, Info: %s";
+    String format = "Total:%12sns => %6sms, Info: %s";
     System.out.println(String.format(format, totalNano, totalNano / 1000_000, info));
   }
 
   public void endCountOneLine() {
     long end = System.nanoTime();
     long totalNano = end - startNano;
-    String format = "Total:%12sns -> %6sms";
+    String format = "Total:%12sns => %6sms";
     System.out.println(String.format(format, totalNano, totalNano / 1000_000));
   }
 
