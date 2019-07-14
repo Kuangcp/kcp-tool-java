@@ -5,4 +5,5 @@ include(
     , 'kcp-tuple'
     , 'kcp-math'
     , 'kcp-tool'
+    , 'kcp-mock'
 )

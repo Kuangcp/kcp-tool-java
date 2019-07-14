@@ -1,5 +1,6 @@
 dependencies {
   api project(':kcp-core')
+  api project(':kcp-mock')
   api project(':kcp-tuple')
   api project(':kcp-math')
 }
