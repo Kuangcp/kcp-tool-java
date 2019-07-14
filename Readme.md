@@ -10,6 +10,7 @@
 |:----|:----|
 | kcp-tool  | 以下模块的总和 |
 | kcp-math  | 数学工具      |
+| kcp-mock  | mock数据      |
 | kcp-core  | 基础工具      |
 | kcp-tuple | 元组         |
 
@@ -20,8 +21,8 @@
 > [使用说明](https://gitee.com/gin9/MavenRepos)
 
 ### 手动安装
-1. git clone --depth 1 https://gitee.com/gin9/kcp-tool-java.git
-1. gradle install -x test
+1. `git clone --depth 1 https://gitee.com/gin9/kcp-tool-java.git`
+1. `gradle install -x test`
 
 ## 引入依赖
 **`Gradle`**  

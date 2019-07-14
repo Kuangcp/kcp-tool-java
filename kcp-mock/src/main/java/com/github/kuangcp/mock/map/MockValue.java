@@ -72,14 +72,14 @@ public class MockValue {
     if (simpleName.equalsIgnoreCase("String")) {
       bound = "";
     } else if (simpleName.equalsIgnoreCase("Long")) {
-      bound = 10000L;
+      bound = Long.MAX_VALUE;
     } else if (simpleName.equalsIgnoreCase("Double")) {
-      bound = 10000.0d;
+      bound = Double.MAX_VALUE;
     } else if (simpleName.equalsIgnoreCase("Float")) {
-      bound = 10000.0f;
+      bound = Float.MAX_VALUE;
     } else if (simpleName.equalsIgnoreCase("Integer")
         || simpleName.equalsIgnoreCase("int")) {
-      bound = 10000;
+      bound = Integer.MAX_VALUE;
     } else {
       throw new UnsupportedOperationException(type.getName());
     }
