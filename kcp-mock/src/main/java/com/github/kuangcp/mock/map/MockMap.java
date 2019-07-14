@@ -4,7 +4,6 @@ import com.github.kuangcp.mock.common.MockHelper;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -15,14 +14,15 @@ import lombok.extern.slf4j.Slf4j;
 public class MockMap {
 
   public static <K, V> Map<K, V> mock(long size, Class<K> key, Class<V> value) {
-    if (Objects.isNull(key) || Objects.isNull(value)) {
-      return Collections.emptyMap();
-    }
-    if (!MockValue.isSupportType(key) || !MockValue.isSupportType(value)) {
-      log.error("not support type: key={} value={}", key.getName(), value.getName());
-      return Collections.emptyMap();
-    }
     return mock(size, MockValue.mock(key), MockValue.mock(value));
+  }
+
+  public static <K, V> Map<K, V> mock(long size, Class<K> key, V value) {
+    return mock(size, MockValue.mock(key), value);
+  }
+
+  public static <K, V> Map<K, V> mock(long size, K key, Class<V> value) {
+    return mock(size, key, MockValue.mock(value));
   }
 
   public static <K, V> Map<K, V> mock(long size, K keyBound, V valueBound) {
@@ -33,10 +33,6 @@ public class MockMap {
    * custom map
    */
   public static <K, V> Map<K, V> mock(Map<K, V> map, long size, Class<K> key, Class<V> value) {
-    if (Objects.isNull(key) || Objects.isNull(value)) {
-      return Collections.emptyMap();
-    }
-
     return mock(map, size, MockValue.mock(key), MockValue.mock(value));
   }
 
@@ -44,8 +40,8 @@ public class MockMap {
    * custom map
    */
   public static <K, V> Map<K, V> mock(Map<K, V> map, long size, K keyBound, V valueBound) {
-    if (size <= 0 || Objects.isNull(keyBound) || Objects.isNull(valueBound)) {
-      return Collections.emptyMap();
+    if (size <= 0) {
+      throw new IllegalArgumentException("size less than 0");
     }
 
     if (!MockValue.isSupportType(keyBound.getClass())

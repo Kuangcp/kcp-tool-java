@@ -63,6 +63,8 @@ public class MockValue {
 
   @SuppressWarnings("unchecked")
   public static <T> T mock(Class<T> type) {
+    Objects.requireNonNull(type);
+
     if (!isSupportType(type)) {
       throw new UnsupportedOperationException(type.getName());
     }
