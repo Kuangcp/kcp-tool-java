@@ -16,7 +16,12 @@ public class GenerateBeanCopierCodeTest {
   }
 
   @Test
-  public void testCopy() {
-    GenerateBeanCopierCode.generate(Computer.class, "one", "computer");
+  public void testCopyBySet() {
+    GenerateBeanCopierCode.generateGetAndSet(Computer.class, "one", "computer");
+  }
+
+  @Test
+  public void testCopyByBuilder() {
+    GenerateBeanCopierCode.generateGetAndBuild(Computer.class, "computer");
   }
 }
