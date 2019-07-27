@@ -28,6 +28,7 @@ public class GenerateBeanCopierCode {
    * get and set the value that field named same
    */
   public static void generateGetAndBuild(Class target, String get) {
+    System.out.println(target.getSimpleName() + ".builder()");
     for (Method method : target.getDeclaredMethods()) {
       String methodName = method.getName();
       if (methodName.startsWith("get")) {

@@ -1,5 +1,6 @@
 package com.github.kuangcp.bean;
 
+import lombok.Builder;
 import lombok.Data;
 import org.junit.Test;
 
@@ -9,7 +10,8 @@ import org.junit.Test;
 public class GenerateBeanCopierCodeTest {
 
   @Data
-  class Computer {
+  @Builder
+  static class Computer {
 
     String tag;
     String color;
