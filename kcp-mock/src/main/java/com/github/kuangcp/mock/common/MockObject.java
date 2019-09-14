@@ -21,7 +21,9 @@ public class MockObject {
     }
 
     try {
-      T result = type.getConstructor().newInstance();
+      Constructor<T> constructor = type.getConstructor();
+      constructor.setAccessible(true);
+      T result = constructor.newInstance();
       initFields(result, type);
       return Optional.of(result);
     } catch (Exception e) {
@@ -40,10 +42,15 @@ public class MockObject {
 
       Parameter parameter = method.getParameters()[0];
       if (MockUsuallyValue.isSupportType(parameter.getType())) {
+        method.setAccessible(true);
         method.invoke(result, MockUsuallyValue.mock(parameter.getType()));
       } else {
         Constructor constructor = parameter.getType().getConstructor();
+
+        constructor.setAccessible(true);
         Object field = constructor.newInstance();
+
+        method.setAccessible(true);
         method.invoke(result, field);
 
         initFields(field, parameter.getType());
