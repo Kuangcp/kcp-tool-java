@@ -1,7 +1,7 @@
-package com.github.kuangcp.mock.set;
+package com.github.kuangcp.mock;
 
 import com.github.kuangcp.mock.common.MockHelper;
-import com.github.kuangcp.mock.map.MockValue;
+import com.github.kuangcp.mock.common.MockValue;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;

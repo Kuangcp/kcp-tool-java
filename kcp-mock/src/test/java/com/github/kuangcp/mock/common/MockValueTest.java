@@ -1,5 +1,7 @@
-package com.github.kuangcp.mock.map;
+package com.github.kuangcp.mock.common;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import org.junit.Test;
 
 /**
@@ -16,8 +18,14 @@ public class MockValueTest {
     Double value = MockValue.mock(30.0);
     System.out.println(value);
 
-    String dfdf = MockValue.mock("dfdf");
-    System.out.println(dfdf);
+    String string = MockValue.mock("20");
+    System.out.println(string);
+
+    Date date = MockValue.mock(Date.class);
+    System.out.println(date);
+
+    BigDecimal price = MockValue.mock(BigDecimal.valueOf(3.4));
+    System.out.println(price);
   }
 
   @Test

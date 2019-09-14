@@ -1,6 +1,6 @@
-package com.github.kuangcp.mock.list;
+package com.github.kuangcp.mock;
 
-import com.github.kuangcp.mock.map.MockValue;
+import com.github.kuangcp.mock.common.MockValue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
