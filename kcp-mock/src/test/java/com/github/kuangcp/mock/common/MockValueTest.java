@@ -12,28 +12,28 @@ public class MockValueTest {
 
   @Test
   public void testMock() {
-    Integer mock = MockValue.mock(100);
+    Integer mock = MockUsuallyValue.mock(100);
     System.out.println(mock);
 
-    Double value = MockValue.mock(30.0);
+    Double value = MockUsuallyValue.mock(30.0);
     System.out.println(value);
 
-    String string = MockValue.mock("20");
+    String string = MockUsuallyValue.mock("20");
     System.out.println(string);
 
-    Date date = MockValue.mock(Date.class);
+    Date date = MockUsuallyValue.mock(Date.class);
     System.out.println(date);
 
-    BigDecimal price = MockValue.mock(BigDecimal.valueOf(3.4));
+    BigDecimal price = MockUsuallyValue.mock(BigDecimal.valueOf(3.4));
     System.out.println(price);
   }
 
   @Test
   public void testMockByType() {
-    System.out.println(MockValue.mock(String.class));
-    System.out.println(MockValue.mock(int.class));
-    System.out.println(MockValue.mock(double.class));
-    System.out.println(MockValue.mock(long.class));
-    System.out.println(MockValue.mock(float.class));
+    System.out.println(MockUsuallyValue.mock(String.class));
+    System.out.println(MockUsuallyValue.mock(int.class));
+    System.out.println(MockUsuallyValue.mock(double.class));
+    System.out.println(MockUsuallyValue.mock(long.class));
+    System.out.println(MockUsuallyValue.mock(float.class));
   }
 }

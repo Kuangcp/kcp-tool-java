@@ -11,11 +11,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Mock int long float double String
+ * Support mock: short int long float double String Date BigDecimal
  *
  * @author https://github.com/kuangcp on 2019-07-14 12:50
  */
-public class MockValue {
+public class MockUsuallyValue {
 
   private static final String DEFAULT_STR_LEN = "8";
   private static final Map<Class<?>, Function> typeMap = new HashMap<>(10);
@@ -29,6 +29,9 @@ public class MockValue {
     put(Integer.class, nextInt);
     put(int.class, nextInt);
 
+    put(Short.class, MockUsuallyValue::mockShort);
+    put(short.class, MockUsuallyValue::mockShort);
+
     Function<Long, Long> nextLong = ThreadLocalRandom.current()::nextLong;
     put(Long.class, nextLong);
     put(long.class, nextLong);
@@ -37,44 +40,12 @@ public class MockValue {
     put(Double.class, nextDouble);
     put(double.class, nextDouble);
 
-    put(Float.class, MockValue::mockFloat);
-    put(float.class, MockValue::mockFloat);
+    put(Float.class, MockUsuallyValue::mockFloat);
+    put(float.class, MockUsuallyValue::mockFloat);
 
-    put(String.class, MockValue::mockString);
-    put(Date.class, MockValue::mockDate);
-    put(BigDecimal.class, MockValue::mockBigDecimal);
-  }
-
-  private static BigDecimal mockBigDecimal(BigDecimal bigDecimal) {
-    return BigDecimal.valueOf(mock(bigDecimal.doubleValue()));
-  }
-
-  private static Date mockDate(Date date) {
-    long time = ThreadLocalRandom.current().nextLong(date.getTime() + mock(100000L));
-    return new Date(time);
-  }
-
-  private static Float mockFloat(Float bound) {
-    return (float) ThreadLocalRandom.current().nextDouble(bound);
-  }
-
-  private static String mockString(String lenBound) {
-    if (Objects.isNull(lenBound)) {
-      throw new RuntimeException("should input integer");
-    }
-
-    Pattern pattern = Pattern.compile("^[0-9]+$");
-    Matcher matcher = pattern.matcher(lenBound);
-    if (matcher.find()) {
-      StringBuilder builder = new StringBuilder();
-      for (int i = 0; i < Integer.parseInt(lenBound); i++) {
-        int value = ThreadLocalRandom.current().nextInt(65, 123);
-        builder.append((char) value);
-      }
-      return builder.toString();
-    } else {
-      throw new RuntimeException("should input integer");
-    }
+    put(String.class, MockUsuallyValue::mockString);
+    put(Date.class, MockUsuallyValue::mockDate);
+    put(BigDecimal.class, MockUsuallyValue::mockBigDecimal);
   }
 
   public static boolean isSupportType(Class<?> type) {
@@ -125,10 +96,49 @@ public class MockValue {
       case "bigdecimal":
         bound = BigDecimal.valueOf(Double.MAX_VALUE);
         break;
+      case "short":
+        bound = Short.MAX_VALUE;
+        break;
       default:
         throw new UnsupportedOperationException(type.getName());
     }
 
     return (T) typeMap.get(type).apply(bound);
+  }
+
+  private static BigDecimal mockBigDecimal(BigDecimal bigDecimal) {
+    return BigDecimal.valueOf(mock(bigDecimal.doubleValue()));
+  }
+
+  private static Date mockDate(Date date) {
+    long time = ThreadLocalRandom.current().nextLong(date.getTime() + mock(100000L));
+    return new Date(time);
+  }
+
+  private static Float mockFloat(Float bound) {
+    return (float) ThreadLocalRandom.current().nextDouble(bound);
+  }
+
+  private static String mockString(String lenBound) {
+    if (Objects.isNull(lenBound)) {
+      throw new RuntimeException("should input integer");
+    }
+
+    Pattern pattern = Pattern.compile("^[0-9]+$");
+    Matcher matcher = pattern.matcher(lenBound);
+    if (matcher.find()) {
+      StringBuilder builder = new StringBuilder();
+      for (int i = 0; i < Integer.parseInt(lenBound); i++) {
+        int value = ThreadLocalRandom.current().nextInt(65, 123);
+        builder.append((char) value);
+      }
+      return builder.toString();
+    } else {
+      throw new RuntimeException("should input integer");
+    }
+  }
+
+  private static Short mockShort(Short bound) {
+    return (short) ThreadLocalRandom.current().nextInt(bound);
   }
 }

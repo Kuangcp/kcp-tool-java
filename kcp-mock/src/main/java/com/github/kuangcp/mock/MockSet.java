@@ -1,7 +1,7 @@
 package com.github.kuangcp.mock;
 
 import com.github.kuangcp.mock.common.MockHelper;
-import com.github.kuangcp.mock.common.MockValue;
+import com.github.kuangcp.mock.common.MockUsuallyValue;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,11 +18,11 @@ public class MockSet {
   }
 
   public static <T> Set<T> mock(long size, Class<T> type) {
-    return mock(new HashSet<>((int) size), size, MockValue.mock(type));
+    return mock(new HashSet<>((int) size), size, MockUsuallyValue.mock(type));
   }
 
   public static <T> Set<T> mock(Set<T> set, long size, T bound) {
-    if (!MockValue.isSupportType(bound.getClass())) {
+    if (!MockUsuallyValue.isSupportType(bound.getClass())) {
       log.error("not support type: key={}", bound.getClass().getName());
       return Collections.emptySet();
     }
@@ -30,7 +30,7 @@ public class MockSet {
     try {
       size = MockHelper.min(bound, size);
       while (set.size() < size) {
-        set.add(MockValue.mock(bound));
+        set.add(MockUsuallyValue.mock(bound));
       }
     } catch (Exception e) {
       log.error(e.getMessage(), e);
@@ -39,6 +39,6 @@ public class MockSet {
   }
 
   public static <T> Set<T> mock(Set<T> set, long size, Class<T> type) {
-    return mock(set, size, MockValue.mock(type));
+    return mock(set, size, MockUsuallyValue.mock(type));
   }
 }

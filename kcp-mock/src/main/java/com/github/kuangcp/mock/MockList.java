@@ -1,6 +1,6 @@
 package com.github.kuangcp.mock;
 
-import com.github.kuangcp.mock.common.MockValue;
+import com.github.kuangcp.mock.common.MockUsuallyValue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,18 +17,18 @@ public class MockList {
   }
 
   public static <T> List<T> mock(long size, Class<T> type) {
-    return mock(new ArrayList<>((int) size), size, MockValue.mock(type));
+    return mock(new ArrayList<>((int) size), size, MockUsuallyValue.mock(type));
   }
 
   public static <T> List<T> mock(List<T> list, long size, T bound) {
-    if (!MockValue.isSupportType(bound.getClass())) {
+    if (!MockUsuallyValue.isSupportType(bound.getClass())) {
       log.error("not support type: key={}", bound.getClass().getName());
       return Collections.emptyList();
     }
 
     try {
       for (int i = 0; i < size; i++) {
-        list.add(MockValue.mock(bound));
+        list.add(MockUsuallyValue.mock(bound));
       }
     } catch (Exception e) {
       log.error(e.getMessage(), e);
@@ -37,6 +37,6 @@ public class MockList {
   }
 
   public static <T> List<T> mock(List<T> list, long size, Class<T> type) {
-    return mock(list, size, MockValue.mock(type));
+    return mock(list, size, MockUsuallyValue.mock(type));
   }
 }
