@@ -1,7 +1,8 @@
 rootProject.name = 'kcp-tool-java'
 
 include(
-    'kcp-core'
+    'common-config'
+    , 'kcp-core'
     , 'kcp-tuple'
     , 'kcp-math'
     , 'kcp-tool'

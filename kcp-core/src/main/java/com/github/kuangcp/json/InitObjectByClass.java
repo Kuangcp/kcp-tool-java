@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -17,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author https://github.com/kuangcp on 2019-06-13 22:08
  */
 @Slf4j
-public class ClassToJson {
+public class InitObjectByClass {
 
   private static final Map<Class<?>, Object> typeMap = new HashMap<>();
 
@@ -41,20 +42,24 @@ public class ClassToJson {
     put(Float.class, 0f);
     put(float.class, 0f);
 
-    put(String.class, "");
+    put(String.class, "str");
     put(Date.class, new Date());
-    put(List.class, new ArrayList(1));
+    put(List.class, new ArrayList());
     put(BigDecimal.class, new BigDecimal(0));
+  }
+
+  public static <T> String getString(Class<T> target, Function<T, String> function) {
+    return fillAllFieldValue(target).map(function).orElse("");
   }
 
   public static <T> Optional<T> fillAllFieldValue(Class<T> target) {
     try {
       T object = target.newInstance();
-      fillAllFields(target, object);
+      fillAllFields(object);
 
       Class<? super T> superclass = target.getSuperclass();
-      System.out.println(superclass.getName());
-      fillAllFields(superclass, object);
+      log.debug(superclass.getName());
+      fillAllFields(object);
 
       return Optional.of(object);
     } catch (InstantiationException | IllegalAccessException e) {
@@ -64,8 +69,9 @@ public class ClassToJson {
     return Optional.empty();
   }
 
-  private static <T> void fillAllFields(Class<T> target, T object)
+  private static <T> void fillAllFields(T object)
       throws IllegalAccessException, InstantiationException {
+    Class<?> target = object.getClass();
     Field[] fields = target.getDeclaredFields();
     fillFields(object, fields);
 

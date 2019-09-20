@@ -1,20 +1,23 @@
 package com.github.kuangcp.json;
 
+import java.util.Objects;
 import java.util.Optional;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
 /**
  * @author https://github.com/kuangcp
  * @date 2019-06-13 22:55
  */
-public class ClassToJsonTest {
+@Slf4j
+public class InitObjectByClassTest {
 
   @Test
   public void testFillAllFieldValue() throws Exception {
-    Optional<Computer> computerOpt = ClassToJson.fillAllFieldValue(Computer.class);
-    computerOpt.ifPresent(System.out::println);
+    String string = InitObjectByClass.getString(Computer.class, Objects::toString);
+    log.info(string);
   }
 }
 
