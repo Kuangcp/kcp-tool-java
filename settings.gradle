@@ -7,4 +7,5 @@ include(
     , 'kcp-math'
     , 'kcp-tool'
     , 'kcp-mock'
+    , 'kcp-aop'
 )
