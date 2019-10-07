@@ -1,15 +1,17 @@
 package com.github.kuangcp.aop.interceptor;
 
 import com.github.kuangcp.aop.aspect.Aspect;
-import com.github.kuangcp.aop.proxy.ReflectionUtil;
+import com.github.kuangcp.aop.util.ReflectionUtil;
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Objects;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -18,15 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JDKInterceptor implements InvocationHandler, Serializable {
 
   private static final long serialVersionUID = -2379466447302720538L;
 
   private Object target;
   private Aspect aspect;
-
-  private JDKInterceptor() {
-  }
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

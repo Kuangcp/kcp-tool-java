@@ -7,7 +7,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author https://github.com/kuangcp on 2019-10-06 18:51
  */
 @Slf4j
-public class PermissionAspect extends SimpleAspect {
+public class PermissionAspect extends EmptyAspect {
 
   @Override
   public boolean before(Object target, Method method, Object[] args) {
@@ -19,6 +19,6 @@ public class PermissionAspect extends SimpleAspect {
       return false;
     }
 
-    return super.before(target, method, args);
+    return true;
   }
 }

@@ -4,8 +4,10 @@ import com.github.kuangcp.aop.aspect.Aspect;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
@@ -16,15 +18,13 @@ import net.sf.cglib.proxy.MethodProxy;
 @Slf4j
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CglibInterceptor implements MethodInterceptor, Serializable {
 
   private static final long serialVersionUID = -7058317844967579327L;
 
   private Object target;
   private Aspect aspect;
-
-  private CglibInterceptor() {
-  }
 
   @Override
   public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy)
@@ -47,6 +47,6 @@ public class CglibInterceptor implements MethodInterceptor, Serializable {
     if (aspect.after(target, method, args, result)) {
       return result;
     }
-    return null;
+    return result;
   }
 }

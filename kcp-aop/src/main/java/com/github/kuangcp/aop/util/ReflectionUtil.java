@@ -1,4 +1,4 @@
-package com.github.kuangcp.aop.proxy;
+package com.github.kuangcp.aop.util;
 
 
 import java.lang.reflect.AccessibleObject;
@@ -21,7 +21,6 @@ public class ReflectionUtil {
    */
   public static Constructor<?>[] getConstructorsDirectly(Class<?> beanClass)
       throws SecurityException {
-//    Assert.notNull(beanClass);
     return beanClass.getDeclaredConstructors();
   }
 
@@ -73,7 +72,6 @@ public class ReflectionUtil {
     }
     return null;
   }
-
 
   /**
    * 实例化对象

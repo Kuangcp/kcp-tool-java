@@ -3,9 +3,11 @@ package com.github.kuangcp.aop.aspect;
 import java.lang.reflect.Method;
 
 /**
+ * 空实现的切面模板
+ *
  * @author https://github.com/kuangcp on 2019-09-29 01:06
  */
-public class SimpleAspect implements Aspect{
+public class EmptyAspect implements Aspect {
 
   @Override
   public boolean before(Object target, Method method, Object[] args) {

@@ -6,6 +6,8 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 
 /**
+ * 代理工具
+ *
  * @author https://github.com/kuangcp on 2019-09-28 20:00
  */
 public class ProxyUtil {
@@ -18,7 +20,7 @@ public class ProxyUtil {
    * @param aspectClass 切面对象类
    * @return 代理对象
    */
-  public static <T> T proxy(T target, Class<? extends Aspect> aspectClass){
+  public static <T> T proxy(T target, Class<? extends Aspect> aspectClass) {
     return ProxyFactory.createProxy(target, aspectClass);
   }
 
@@ -29,7 +31,7 @@ public class ProxyUtil {
    * @param aspect 切面对象
    * @return 代理对象
    */
-  public static <T> T proxy(T target, Aspect aspect){
+  public static <T> T proxy(T target, Aspect aspect) {
     return ProxyFactory.createProxy(target, aspect);
   }
 

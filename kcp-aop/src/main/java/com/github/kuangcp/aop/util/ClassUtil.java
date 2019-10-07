@@ -1,10 +1,15 @@
-package com.github.kuangcp.aop.proxy;
+package com.github.kuangcp.aop.util;
+
+import com.github.kuangcp.aop.proxy.BasicType;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author https://github.com/kuangcp on 2019-10-06 18:17
  */
 public class ClassUtil {
-
 
   /**
    * 是否为包装类型
@@ -13,10 +18,7 @@ public class ClassUtil {
    * @return 是否为包装类型
    */
   public static boolean isPrimitiveWrapper(Class<?> clazz) {
-    if (null == clazz) {
-      return false;
-    }
-    return BasicType.wrapperPrimitiveMap.containsKey(clazz);
+    return Objects.nonNull(clazz) && BasicType.wrapperPrimitiveMap.containsKey(clazz);
   }
 
   /**
@@ -26,12 +28,8 @@ public class ClassUtil {
    * @return 是否为基本类型
    */
   public static boolean isBasicType(Class<?> clazz) {
-    if (null == clazz) {
-      return false;
-    }
-    return (clazz.isPrimitive() || isPrimitiveWrapper(clazz));
+    return Objects.nonNull(clazz) && (clazz.isPrimitive() || isPrimitiveWrapper(clazz));
   }
-
 
   /**
    * 比较判断types1和types2两组类，如果types1中所有的类都与types2对应位置的类相同，或者是其父类或接口，则返回<code>true</code>
@@ -62,7 +60,7 @@ public class ClassUtil {
         if (BasicType.unWrap(type1) != BasicType.unWrap(type2)) {
           return false;
         }
-      } else if (false == type1.isAssignableFrom(type2)) {
+      } else if (!type1.isAssignableFrom(type2)) {
         return false;
       }
     }
@@ -78,12 +76,9 @@ public class ClassUtil {
    */
   public static Class<?>[] getClasses(Object... objects) {
     Class<?>[] classes = new Class<?>[objects.length];
-    Object obj;
-    for (int i = 0; i < objects.length; i++) {
-      obj = objects[i];
-      classes[i] = (null == obj) ? Object.class : obj.getClass();
-    }
-    return classes;
+    List<Class<?>> result = Stream.of(objects)
+        .map(v -> Objects.isNull(v) ? Object.class : v.getClass())
+        .collect(Collectors.toList());
+    return result.toArray(classes);
   }
-
 }

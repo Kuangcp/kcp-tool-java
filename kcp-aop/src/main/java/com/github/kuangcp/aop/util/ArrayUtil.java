@@ -1,4 +1,4 @@
-package com.github.kuangcp.aop.proxy;
+package com.github.kuangcp.aop.util;
 
 /**
  * @author https://github.com/kuangcp on 2019-10-06 18:22
@@ -15,5 +15,4 @@ public class ArrayUtil {
   public static <T> boolean isEmpty(T[] array) {
     return array == null || array.length == 0;
   }
-
 }
