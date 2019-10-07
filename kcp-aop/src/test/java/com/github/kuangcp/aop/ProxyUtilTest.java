@@ -1,7 +1,7 @@
 package com.github.kuangcp.aop;
 
 import com.github.kuangcp.aop.aspect.PermissionAspect;
-import com.github.kuangcp.aop.target.Searcher;
+import com.github.kuangcp.aop.represented.Searcher;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
