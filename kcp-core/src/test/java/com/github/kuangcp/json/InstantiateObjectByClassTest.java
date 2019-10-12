@@ -1,6 +1,6 @@
 package com.github.kuangcp.json;
 
-import java.util.Objects;
+import java.math.BigDecimal;
 import java.util.Optional;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,12 +12,21 @@ import org.junit.Test;
  * @date 2019-06-13 22:55
  */
 @Slf4j
-public class InitObjectByClassTest {
+public class InstantiateObjectByClassTest {
 
   @Test
-  public void testFillAllFieldValue() throws Exception {
-    String string = InitObjectByClass.getString(Computer.class, Objects::toString);
+  public void testToString() {
+    String string = InstantiateObjectByClass.fillFieldsThenToString(Computer.class);
     log.info(string);
+  }
+
+  @Test
+  public void testFillFields(){
+    Optional<Computer> computerOpt = InstantiateObjectByClass.fillFields(Computer.class);
+    if (computerOpt.isPresent()) {
+      Computer computer = computerOpt.get();
+      System.out.println(computer);
+    }
   }
 }
 
@@ -35,6 +44,7 @@ class KeyBoard extends StandardIO {
   private String brandName;
   private Integer keyNum;
   private double price;
+  private BigDecimal realPrice;
 }
 
 @Data
