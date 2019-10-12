@@ -78,8 +78,8 @@ public class InstantiateObjectByClass {
       fillFieldsWithObject(object);
 
       Class<? super T> superclass = target.getSuperclass();
-      log.debug(superclass.getName());
-      fillFieldsWithObject(object);
+      log.debug("super class {}", superclass.getName());
+      fillFieldsWithObject(object, superclass);
 
       return Optional.of(object);
     } catch (InstantiationException | IllegalAccessException e) {
@@ -92,6 +92,11 @@ public class InstantiateObjectByClass {
   private static <T> void fillFieldsWithObject(T object)
       throws IllegalAccessException, InstantiationException {
     Class<?> target = object.getClass();
+    fillFieldsWithObject(object, target);
+  }
+
+  private static <T> void fillFieldsWithObject(T object, Class<?> target)
+      throws IllegalAccessException, InstantiationException {
     Field[] fields = target.getDeclaredFields();
     fillFieldsWithFields(object, fields);
 

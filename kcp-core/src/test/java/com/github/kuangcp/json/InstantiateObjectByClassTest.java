@@ -37,7 +37,6 @@ abstract class StandardIO {
   public String output;
 }
 
-@Data
 @EqualsAndHashCode(callSuper = true)
 class KeyBoard extends StandardIO {
 
