@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -21,11 +22,11 @@ public class InstantiateObjectByClassTest {
   }
 
   @Test
-  public void testFillFields(){
+  public void testFillFields() {
     Optional<Computer> computerOpt = InstantiateObjectByClass.fillFields(Computer.class);
     if (computerOpt.isPresent()) {
       Computer computer = computerOpt.get();
-      System.out.println(computer);
+      log.info("{}", computer);
     }
   }
 }
@@ -37,6 +38,8 @@ abstract class StandardIO {
   public String output;
 }
 
+@Data
+@ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 class KeyBoard extends StandardIO {
 
