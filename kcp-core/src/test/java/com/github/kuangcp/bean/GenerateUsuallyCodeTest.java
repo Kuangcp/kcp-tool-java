@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * @author https://github.com/kuangcp on 2019-07-15 11:12
  */
-public class GenerateBeanCopierCodeTest {
+public class GenerateUsuallyCodeTest {
 
   @Data
   @Builder
@@ -19,11 +19,16 @@ public class GenerateBeanCopierCodeTest {
 
   @Test
   public void testCopyBySet() {
-    GenerateBeanCopierCode.generateGetAndSet(Computer.class, "one", "computer");
+    GenerateUsuallyCode.generateGetThenSet(Computer.class, "one", "computer");
   }
 
   @Test
   public void testCopyByBuilder() {
-    GenerateBeanCopierCode.generateGetAndBuild(Computer.class, "computer");
+    GenerateUsuallyCode.generateGetThenBuild(Computer.class, "computer");
+  }
+
+  @Test
+  public void testEnum(){
+    GenerateUsuallyCode.generateEnumFromState(Computer.class);
   }
 }
