@@ -29,6 +29,11 @@ public class GenerateUsuallyCodeTest {
 
   @Test
   public void testEnum(){
-    GenerateUsuallyCode.generateEnumFromState(Computer.class);
+    GenerateUsuallyCode.generateEnumFromInterface(Computer.class);
+  }
+
+  @Test
+  public void testSQL(){
+    GenerateUsuallyCode.generateSQLFromEntity(Computer.class);
   }
 }

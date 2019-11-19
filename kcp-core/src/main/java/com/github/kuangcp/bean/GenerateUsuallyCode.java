@@ -2,7 +2,7 @@ package com.github.kuangcp.bean;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.Objects;
+import java.util.Date;
 
 /**
  * @author https://github.com/kuangcp on 2019-07-15 11:05
@@ -42,7 +42,30 @@ public class GenerateUsuallyCode {
     System.out.println(".build();");
   }
 
-  public static void generateEnumFromState(Class target) {
+  public static void generateEnumFromInterface(Class target) {
+    StringBuilder result = new StringBuilder();
+    Field[] declaredFields = target.getDeclaredFields();
+    if (declaredFields.length == 0) {
+      return;
+    }
+
+    System.out.println("@AllArgsConstructor\npublic enum " + target.getSimpleName() + "Enum {\n");
+    String className = target.getSimpleName();
+    for (Field field : declaredFields) {
+      String name = field.getName();
+      result.append("    ").append(name).append("(").append(className).append(".").append(name)
+          .append(", \"\"),\n");
+    }
+    System.out.println(result.toString().substring(0, result.length() - 2) + ";");
+
+    System.out.println("\n    @Getter\n"
+        + "    private int index;\n"
+        + "\n"
+        + "    @Getter\n"
+        + "    private String desc;\n}");
+  }
+
+  public static void generateSQLFromEntity(Class target) {
     StringBuilder result = new StringBuilder();
     Field[] declaredFields = target.getDeclaredFields();
     if (declaredFields.length == 0) {
@@ -50,11 +73,27 @@ public class GenerateUsuallyCode {
     }
 
     String className = target.getSimpleName();
+    System.out.println("CREATE TABLE " + className + " (");
     for (Field field : declaredFields) {
       String name = field.getName();
-      result.append(name).append("(").append(className).append(".").append(name)
-          .append(", \"\"),\n");
+
+      String type = "";
+
+      Class<?> classType = field.getType();
+      if (String.class.equals(classType)) {
+        type = " varchar(64) ";
+      } else if (Integer.class.equals(classType)) {
+        type = " int ";
+      } else if (Long.class.equals(classType)) {
+        type = " bigint ";
+      } else if (Date.class.equals(classType)) {
+        type = " timestamp ";
+      }
+
+      result.append(name).append(type).append(" null comment '',\n");
     }
-    System.out.println(result.toString().substring(0, result.length() - 2) + ";");
+
+    System.out.println(result.toString().substring(0, result.length() - 2)
+        + ")\n comment '表' charset = utf8;");
   }
 }
