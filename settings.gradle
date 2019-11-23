@@ -8,4 +8,5 @@ include(
     , 'kcp-tool'
     , 'kcp-mock'
     , 'kcp-aop'
+    , 'kcp-kafka'
 )

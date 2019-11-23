@@ -4,5 +4,6 @@ dependencies {
   api project(':kcp-mock')
   api project(':kcp-tuple')
   api project(':kcp-math')
+  api project(':kcp-kafka')
   implementation(project(':common-config'))
 }
