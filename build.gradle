@@ -7,7 +7,7 @@ subprojects {
 
   group = 'com.github.kuangcp'
   // all module use the same version
-  version = '1.0.6'
+  version = '1.0.7'
 
   // default build dir is build/ but idea compile dir is out/, i'm dislike this way
   // dir out/ just have production/ and test/ dir
@@ -19,8 +19,8 @@ subprojects {
   repositories {
     mavenLocal()
 
-    def aliYun = "http://maven.aliyun.com/nexus/content/groups/public/"
-    def abroad = "http://central.maven.org/maven2/"
+    def aliYun = "https://maven.aliyun.com/nexus/content/groups/public/"
+    def abroad = "https://central.maven.org/maven2/"
     maven {
       url = aliYun
       artifactUrls abroad
