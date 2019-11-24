@@ -55,6 +55,9 @@ public class KafkaConsumerUtilTest {
 
     KafkaConsumerUtil.consumerPlainText(Duration.ofMillis(1000),
         Arrays.asList(oneExecutor, twoExecutor));
+
+    KafkaConsumerUtil.consumerPlainText(Duration.ofMillis(3000),
+        Arrays.asList(oneExecutor, twoExecutor));
   }
 
   @Test
