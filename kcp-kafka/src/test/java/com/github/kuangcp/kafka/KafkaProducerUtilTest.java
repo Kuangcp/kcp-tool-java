@@ -15,7 +15,11 @@ public class KafkaProducerUtilTest {
 
   @Test
   public void testSendPlainText() {
-    KafkaProducerUtil.sendPlainText(Topics.HI, "test send message");
+//    KafkaProducerUtil.sendPlainText(Topics.HI, "test send message");
+    for (int i = 0; i < 100; i++) {
+      KafkaProducerUtil.sendPlainText(Topics.ONE, "" + System.nanoTime());
+      KafkaProducerUtil.sendPlainText(Topics.TWO, "" + System.nanoTime());
+    }
   }
 
   @Test

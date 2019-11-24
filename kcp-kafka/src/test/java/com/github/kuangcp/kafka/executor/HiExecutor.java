@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author https://github.com/kuangcp on 2019-11-22 21:16
  */
 @Slf4j
-public class HiExecutor implements SimpleMessageExecutor<String> {
+public class HiExecutor implements SimpleMessageExecutor {
 
   @Override
   public void execute(String message) {

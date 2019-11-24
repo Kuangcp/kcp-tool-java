@@ -6,5 +6,7 @@ package com.github.kuangcp.kafka.domain;
 public interface Topics {
 
   String HI = "hi";
+  String ONE = "two";
+  String TWO = "one";
   String USER_LOGIN = "user_login";
 }

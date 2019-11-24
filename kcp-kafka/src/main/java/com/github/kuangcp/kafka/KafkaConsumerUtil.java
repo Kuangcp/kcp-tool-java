@@ -2,13 +2,13 @@ package com.github.kuangcp.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.github.kuangcp.kafka.common.Message;
 import com.github.kuangcp.kafka.common.GeneralMessageExecutor;
+import com.github.kuangcp.kafka.common.Message;
 import com.github.kuangcp.kafka.common.MessageExecutor;
 import com.github.kuangcp.kafka.common.MessageTopic;
 import com.github.kuangcp.kafka.config.KafkaConfigManager;
 import java.time.Duration;
-import java.util.List;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -57,7 +57,7 @@ public class KafkaConsumerUtil {
    * @param <E> executor
    */
   static <E extends MessageExecutor<String> & MessageTopic> void consumerPlainText(
-      Duration duration, List<E> executors) {
+      Duration duration, Collection<E> executors) {
     if (Objects.isNull(duration) || Objects.isNull(executors) || executors.isEmpty()) {
       log.warn("consumer param invalid");
       return;
@@ -93,7 +93,7 @@ public class KafkaConsumerUtil {
    * @param executors 执行器
    * @param <T> Message content 类型
    */
-  static <T> void consumer(Duration duration, List<GeneralMessageExecutor<T>> executors) {
+  static <T> void consumer(Duration duration, Collection<GeneralMessageExecutor<T>> executors) {
     if (Objects.isNull(duration) || Objects.isNull(executors) || executors.isEmpty()) {
       log.warn("consumer param invalid");
       return;

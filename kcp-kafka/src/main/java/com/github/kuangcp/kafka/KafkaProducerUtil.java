@@ -61,8 +61,8 @@ public class KafkaProducerUtil {
     Message<T> message = new Message<>(content);
     try {
       String messageStr = objectMapper.writeValueAsString(message);
-      producer.send(new ProducerRecord<>(topic, messageStr));
-      log.info("send message succeed: messageStr={}", messageStr);
+
+      sendPlainText(topic, messageStr);
     } catch (JsonProcessingException e) {
       log.error("", e);
     }
@@ -76,6 +76,7 @@ public class KafkaProducerUtil {
    */
   public static void sendPlainText(String topic, String message) {
     producer.send(new ProducerRecord<>(topic, message));
+    log.info("send message succeed: message={}", message);
   }
 
   /**
