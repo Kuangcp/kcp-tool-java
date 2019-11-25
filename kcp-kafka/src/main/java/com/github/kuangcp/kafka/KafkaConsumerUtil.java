@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.errors.WakeupException;
 
 /**
  * @author https://github.com/kuangcp on 2019-11-13 09:35
@@ -28,16 +30,14 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 public class KafkaConsumerUtil {
 
   private static ObjectMapper objectMapper = new ObjectMapper();
-
   private static volatile boolean stop = false;
+  private static KafkaConsumer consumer;
+  private static int cpuNum = Runtime.getRuntime().availableProcessors();
 
-  private static ExecutorService pool = Executors
-      .newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-
+  private static ExecutorService consumerPool = Executors.newSingleThreadExecutor();
+  private static ExecutorService executorPool = Executors.newFixedThreadPool(cpuNum);
   private static Properties properties = KafkaConfigManager.getConsumerConfig()
       .orElseThrow(() -> new RuntimeException("加载Kafka消费者配置出错"));
-
-  private static KafkaConsumer consumer;
 
   static {
     Runtime.getRuntime().addShutdownHook(new Thread(KafkaConsumerUtil::shutdown));
@@ -64,20 +64,23 @@ public class KafkaConsumerUtil {
 
     init();
 
-    Map<String, E> executorMap = executors.stream()
-        .collect(Collectors.toMap(MessageExecutor::getTopic, Function.identity(),
-            (front, current) -> current));
+    consumerPool.submit(() -> {
+      Map<String, E> executorMap = executors.stream()
+          .collect(Collectors.toMap(MessageExecutor::getTopic, Function.identity(),
+              (front, current) -> current));
 
-    consumer.subscribe(executorMap.keySet());
-    while (!stop) {
-      ConsumerRecords<String, String> records = consumer.poll(duration);
-      for (ConsumerRecord<String, String> record : records) {
-        E executor = executorMap.get(record.topic());
-        if (Objects.nonNull(executor)) {
-          pool.submit(() -> executor.execute(record.value()));
+      consumer.subscribe(executorMap.keySet());
+
+      while (!stop) {
+        ConsumerRecords<String, String> records = consumer.poll(duration);
+        for (ConsumerRecord<String, String> record : records) {
+          E executor = executorMap.get(record.topic());
+          if (Objects.nonNull(executor)) {
+            executorPool.submit(() -> executor.execute(record.value()));
+          }
         }
       }
-    }
+    });
   }
 
   private static boolean validate(Duration duration, Collection executors) {
@@ -109,37 +112,47 @@ public class KafkaConsumerUtil {
 
     init();
 
-    Map<String, GeneralMessageExecutor<T>> executorMap = executors.stream()
-        .collect(Collectors.toMap(GeneralMessageExecutor::getTopic, Function.identity(),
-            (front, current) -> current));
+    consumerPool.submit(() -> {
+      Map<String, GeneralMessageExecutor<T>> executorMap = executors.stream()
+          .collect(Collectors.toMap(GeneralMessageExecutor::getTopic, Function.identity(),
+              (front, current) -> current));
+      consumer.subscribe(executorMap.keySet());
 
-    consumer.subscribe(executorMap.keySet());
-    while (!stop) {
-      ConsumerRecords<String, String> records = consumer.poll(duration);
-      for (ConsumerRecord<String, String> record : records) {
-        GeneralMessageExecutor<T> executor = executorMap.get(record.topic());
-        if (Objects.isNull(executor)) {
-          continue;
-        }
+      try {
+        while (!stop) {
+          ConsumerRecords<String, String> records = consumer.poll(duration);
+          for (ConsumerRecord<String, String> record : records) {
+            GeneralMessageExecutor<T> executor = executorMap.get(record.topic());
+            if (Objects.isNull(executor)) {
+              continue;
+            }
 
-        pool.submit(() -> {
-          try {
-            Message<T> message = objectMapper.readValue(record.value(), Message.class);
+            executorPool.submit(() -> {
+              try {
+                Message<T> message = objectMapper.readValue(record.value(), Message.class);
 
-            // 因为以上反序列化无法获取泛型的类型，所以无法正确的设置 content 对象，根本原因是Java的泛型擦除
-            // 解决方案是先将content再序列化 最后指定类型反序列化
-            Class<T> contentClass = executor.getContentClass();
-            String value = objectMapper.writeValueAsString(message.getContent());
-            T content = objectMapper.readValue(value, contentClass);
-            message.setContent(content);
+                // 因为以上反序列化无法获取泛型的类型，所以无法正确的设置 content 对象，根本原因是Java的泛型擦除
+                // 解决方案是先将content再序列化 最后指定类型反序列化
+                Class<T> contentClass = executor.getContentClass();
+                String value = objectMapper.writeValueAsString(message.getContent());
+                T content = objectMapper.readValue(value, contentClass);
+                message.setContent(content);
 
-            executor.execute(message);
-          } catch (Exception e) {
-            log.error("", e);
+                executor.execute(message);
+              } catch (Exception e) {
+                log.error("", e);
+              }
+            });
           }
-        });
+        }
+      } catch (WakeupException e) {
+        if (!stop) {
+          throw e;
+        }
+      } finally {
+        consumer.close();
       }
-    }
+    });
   }
 
   /**
@@ -149,9 +162,9 @@ public class KafkaConsumerUtil {
     stop = true;
     try {
       if (Objects.nonNull(consumer)) {
-        consumer.close();
+        consumer.wakeup();
       }
-      pool.shutdown();
+      executorPool.shutdown();
     } catch (Exception e) {
       log.error("shutdown messageProducer error");
     }

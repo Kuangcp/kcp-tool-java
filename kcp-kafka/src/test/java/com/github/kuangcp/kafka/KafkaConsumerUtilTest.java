@@ -16,10 +16,20 @@ public class KafkaConsumerUtilTest {
 
   @Test
   public void testConsumerWithSimpleExecutor() {
-    HiExecutor executor = new HiExecutor();
+    HiExecutor executor1 = new HiExecutor("executor-1");
 
     KafkaConsumerUtil.consumerPlainText(Duration.ofMillis(1000),
-        Collections.singletonList(executor));
+        Collections.singletonList(executor1));
+
+    HiExecutor executor2 = new HiExecutor("executor-2");
+    KafkaConsumerUtil.consumerPlainText(Duration.ofMillis(1000),
+        Collections.singletonList(executor2));
+
+    try {
+      Thread.currentThread().join();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
