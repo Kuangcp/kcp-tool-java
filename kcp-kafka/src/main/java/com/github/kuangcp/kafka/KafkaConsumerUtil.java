@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -47,8 +46,6 @@ public class KafkaConsumerUtil {
 
   }
 
-  // TODO 两个线程分摊 Topics？
-
   /**
    * 消费Topic
    *
@@ -56,8 +53,8 @@ public class KafkaConsumerUtil {
    * @param executors 执行器
    * @param <E> executor
    */
-  public static <E extends MessageExecutor<String> & MessageTopic> void consumerPlainText(
-      Duration duration, Collection<E> executors) {
+  public static <E extends MessageExecutor<String> & MessageTopic>
+  void consumerPlainText(Duration duration, Collection<E> executors) {
     if (!validate(duration, executors)) {
       return;
     }
@@ -83,7 +80,7 @@ public class KafkaConsumerUtil {
     });
   }
 
-  private static boolean validate(Duration duration, Collection executors) {
+  private static <E> boolean validate(Duration duration, Collection<E> executors) {
     if (Objects.isNull(duration) || Objects.isNull(executors) || executors.isEmpty()) {
       log.warn("consumer param invalid");
       return false;
