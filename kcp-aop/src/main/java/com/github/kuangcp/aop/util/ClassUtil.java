@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 /**
  * @author https://github.com/kuangcp on 2019-10-06 18:17
  */
-public class ClassUtil {
+public abstract class ClassUtil {
 
   /**
    * 是否为包装类型
@@ -67,7 +67,6 @@ public class ClassUtil {
     return true;
   }
 
-
   /**
    * 获得对象数组的类数组
    *
@@ -80,5 +79,29 @@ public class ClassUtil {
         .map(v -> Objects.isNull(v) ? Object.class : v.getClass())
         .collect(Collectors.toList());
     return result.toArray(classes);
+  }
+
+  public static ClassLoader getDefaultClassLoader() {
+    ClassLoader loader = null;
+    try {
+      loader = Thread.currentThread().getContextClassLoader();
+    } catch (Throwable e) {
+
+    }
+    if (Objects.nonNull(loader)) {
+      return loader;
+    }
+
+    loader = ClassUtil.class.getClassLoader();
+    if (Objects.nonNull(loader)) {
+      return loader;
+    }
+
+    try {
+      loader = ClassLoader.getSystemClassLoader();
+    } catch (Throwable e) {
+
+    }
+    return loader;
   }
 }

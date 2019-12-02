@@ -22,10 +22,13 @@ public class KafkaProducerUtil {
   private static Properties properties = KafkaConfigManager.getProducerConfig()
       .orElseThrow(() -> new RuntimeException("加载Kafka生产者配置出错"));
 
-  private static Producer<String, String> producer = new KafkaProducer<>(properties);
+  private static Producer<String, String> producer;
 
   static {
     Runtime.getRuntime().addShutdownHook(new Thread(KafkaProducerUtil::shutdown));
+  }
+
+  private KafkaProducerUtil() {
   }
 
   /**
@@ -37,6 +40,8 @@ public class KafkaProducerUtil {
    * @see Message
    */
   public static <T> void send(String topic, Message<T> message) {
+    init();
+
     if (Objects.isNull(topic) || topic.isEmpty() || Objects.isNull(message)) {
       return;
     }
@@ -58,6 +63,8 @@ public class KafkaProducerUtil {
    * @see Message
    */
   public static <T> void send(String topic, T content) {
+    init();
+
     Message<T> message = new Message<>(content);
     try {
       String messageStr = objectMapper.writeValueAsString(message);
@@ -75,8 +82,16 @@ public class KafkaProducerUtil {
    * @param message 消息
    */
   public static void sendPlainText(String topic, String message) {
+    init();
+
     producer.send(new ProducerRecord<>(topic, message));
     log.info("send message succeed: message={}", message);
+  }
+
+  private synchronized static void init() {
+    if (Objects.isNull(producer)) {
+      producer = new KafkaProducer<>(properties);
+    }
   }
 
   /**

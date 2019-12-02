@@ -58,6 +58,8 @@ public class KafkaConsumerConfig {
   // default 4
   private String rebalanceMaxRetries;
 
+  private Integer dispatchThreadNum;
+
   //---还有更多配置，详见ConsumerConfig，
 
 }
