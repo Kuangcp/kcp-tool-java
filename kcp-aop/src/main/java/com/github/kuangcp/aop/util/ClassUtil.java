@@ -85,7 +85,7 @@ public abstract class ClassUtil {
     ClassLoader loader = null;
     try {
       loader = Thread.currentThread().getContextClassLoader();
-    } catch (Throwable e) {
+    } catch (Throwable ignored) {
 
     }
     if (Objects.nonNull(loader)) {
@@ -99,7 +99,7 @@ public abstract class ClassUtil {
 
     try {
       loader = ClassLoader.getSystemClassLoader();
-    } catch (Throwable e) {
+    } catch (Throwable ignored) {
 
     }
     return loader;
