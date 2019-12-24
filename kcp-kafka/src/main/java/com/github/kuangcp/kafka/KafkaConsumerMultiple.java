@@ -2,10 +2,12 @@ package com.github.kuangcp.kafka;
 
 import static java.util.stream.Collectors.toList;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kuangcp.kafka.common.EnhanceMessageExecutor;
 import com.github.kuangcp.kafka.common.Message;
 import com.github.kuangcp.kafka.config.ConfigConstant;
 import com.github.kuangcp.kafka.config.KafkaConfigManager;
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -63,7 +65,6 @@ public final class KafkaConsumerMultiple {
    */
   private static final int DEFAULT_DISPATCH_THREAD_NUM = 2;
 
-  // TODO 原先是Spring直接注入
   private List<EnhanceMessageExecutor<String>> enhanceMessageExecutors;
 
   /**
@@ -71,9 +72,9 @@ public final class KafkaConsumerMultiple {
    */
   private final Set<TopicDispatchRunner> runners = new HashSet<>();
 
-  //  @Override
-  public void afterPropertiesSet() {
-    this.consumerConfig = KafkaConfigManager.getConsumerConfig()
+  public static void consumer(List<EnhanceMessageExecutor<String>> enhanceMessageExecutors) {
+    KafkaConsumerMultiple kafkaConsumerMultiple = new KafkaConsumerMultiple();
+    kafkaConsumerMultiple.consumerConfig = KafkaConfigManager.getConsumerConfig()
         .orElseThrow(() -> new RuntimeException("加载Kafka消费者配置出错"));
 
     // 该方法用来在jvm中增加一个关闭的钩子。
@@ -81,9 +82,10 @@ public final class KafkaConsumerMultiple {
     // 其中shutdownHook是一个已初始化但并不有启动的线程，
     // 当jvm关闭的时候，会执行系统中已经设置的所有通过方法addShutdownHook添加的钩子，当系统执行完这些钩子后，jvm才会关闭。
     // 所以可通过这些钩子在jvm关闭的时候进行内存清理、资源回收等工作。
-    Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
+    Runtime.getRuntime().addShutdownHook(new Thread(kafkaConsumerMultiple::shutdown));
 
-    initConsumeMsg();
+    kafkaConsumerMultiple.enhanceMessageExecutors = enhanceMessageExecutors;
+    kafkaConsumerMultiple.initConsumeMsg();
   }
 
   public static boolean isNoneBlank(final CharSequence... css) {
@@ -212,6 +214,7 @@ public final class KafkaConsumerMultiple {
 
   static class TopicDispatchRunner implements Runnable {
 
+    private ObjectMapper objectMapper = new ObjectMapper();
     @Getter
     private List<String> topics;
     private KafkaConsumer<String, String> consumer;
@@ -239,6 +242,10 @@ public final class KafkaConsumerMultiple {
     public void run() {
       try {
         log.info("Topic dispatcher subscribe topics :{} ", topics);
+        if (Objects.isNull(topics) || topics.isEmpty()) {
+          return;
+        }
+
         this.consumer.subscribe(topics);
         while (!closed.get()) {
           try {
@@ -296,9 +303,14 @@ public final class KafkaConsumerMultiple {
       consumer.wakeup();
     }
 
+    @SuppressWarnings("unchecked")
     private Message<String> parseMessage(ConsumerRecord<String, String> record) {
-      return null;
-//      return JSON.parseObject(record.value(), Message.class, Feature.SortFeidFastMatch);
+      try {
+        return objectMapper.readValue(record.value(), Message.class);
+      } catch (IOException e) {
+        return null;
+      }
+
     }
 
     @Override
