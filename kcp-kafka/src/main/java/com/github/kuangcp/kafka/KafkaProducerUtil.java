@@ -15,7 +15,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
  * @author https://github.com/kuangcp on 2019-11-13 09:36
  */
 @Slf4j
-public class KafkaProducerUtil {
+public final class KafkaProducerUtil {
 
   private static ObjectMapper objectMapper = new ObjectMapper();
 
@@ -40,7 +40,7 @@ public class KafkaProducerUtil {
    * @see Message
    */
   public static <T> void send(String topic, Message<T> message) {
-    init();
+    initKafkaProducer();
 
     if (Objects.isNull(topic) || topic.isEmpty() || Objects.isNull(message)) {
       return;
@@ -59,38 +59,57 @@ public class KafkaProducerUtil {
    *
    * @param topic 主题
    * @param content 消息内容
-   * @param <T> 内容类型
+   * @param <T> Message 中 内容类型
    * @see Message
    */
   public static <T> void send(String topic, T content) {
-    init();
+    initKafkaProducer();
 
     Message<T> message = new Message<>(content);
     try {
       String messageStr = objectMapper.writeValueAsString(message);
 
-      sendPlainText(topic, messageStr);
+      sendAsPlainText(topic, messageStr);
     } catch (JsonProcessingException e) {
       log.error("", e);
     }
   }
 
   /**
-   * 发送字符串消息
+   * 发送纯字符串消息
    *
    * @param topic 主题
    * @param message 消息
    */
-  public static void sendPlainText(String topic, String message) {
-    init();
+  public static void sendAsPlainText(String topic, String message) {
+    initKafkaProducer();
 
     producer.send(new ProducerRecord<>(topic, message));
     log.info("send message succeed: message={}", message);
   }
 
-  private synchronized static void init() {
+  private synchronized static void initKafkaProducer() {
     if (Objects.isNull(producer)) {
       producer = new KafkaProducer<>(properties);
+    }
+  }
+
+  /**
+   * 发送消息
+   *
+   * @param topic 主题
+   * @param content 消息内容对象 将转为JSON串进行发送
+   * @param <T> 消息内容类型
+   */
+  public static <T> void sendAsJSON(String topic, T content) {
+    initKafkaProducer();
+
+    try {
+      String messageStr = objectMapper.writeValueAsString(content);
+
+      sendAsPlainText(topic, messageStr);
+    } catch (JsonProcessingException e) {
+      log.error("", e);
     }
   }
 

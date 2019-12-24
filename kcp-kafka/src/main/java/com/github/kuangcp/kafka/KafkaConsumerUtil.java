@@ -26,7 +26,7 @@ import org.apache.kafka.common.errors.WakeupException;
  */
 @Slf4j
 @SuppressWarnings("unchecked")
-public class KafkaConsumerUtil {
+public final class KafkaConsumerUtil {
 
   private static ObjectMapper objectMapper = new ObjectMapper();
   private static volatile boolean stop = false;

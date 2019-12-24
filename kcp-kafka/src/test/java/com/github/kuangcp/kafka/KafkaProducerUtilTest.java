@@ -1,10 +1,16 @@
 package com.github.kuangcp.kafka;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.kuangcp.kafka.domain.Book;
 import com.github.kuangcp.kafka.domain.Topics;
 import com.github.kuangcp.kafka.domain.User;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import lombok.Builder;
+import lombok.Data;
 import org.junit.Test;
 
 /**
@@ -15,11 +21,44 @@ public class KafkaProducerUtilTest {
 
   @Test
   public void testSendPlainText() {
-//    KafkaProducerUtil.sendPlainText(Topics.HI, "test send message");
-    for (int i = 0; i < 100; i++) {
-      KafkaProducerUtil.sendPlainText(Topics.ONE, "" + System.nanoTime());
-      KafkaProducerUtil.sendPlainText(Topics.TWO, "" + System.nanoTime());
+    KafkaProducerUtil.sendAsPlainText(Topics.HI, "test send message");
+    for (int i = 0; i < 2; i++) {
+      KafkaProducerUtil.sendAsPlainText(Topics.HI, "" + System.nanoTime());
+//      KafkaProducerUtil.sendPlainText(Topics.TWO, "" + System.nanoTime());
     }
+  }
+
+  @Data
+  @Builder
+  static class TestData {
+    private String row;
+    @JsonProperty("event_type")
+    private String eventType;
+    private String body;
+  }
+
+  @Test
+  public void testLogStash() {
+    TestData data = TestData.builder()
+        .row("1_13")
+        .eventType("1")
+        .body("FSFS" + LocalDateTime.now().toString())
+        .build();
+
+    KafkaProducerUtil.send(Topics.HI, data);
+  }
+
+  @Test
+  public void testJSON() throws JsonProcessingException {
+    TestData data = TestData.builder()
+        .row("1_7")
+        .eventType("1")
+        .body("FSFS" + LocalDateTime.now().toString())
+        .build();
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    String result = objectMapper.writeValueAsString(data);
+    System.out.println(result);
   }
 
   @Test

@@ -37,7 +37,7 @@ import org.apache.kafka.common.errors.WakeupException;
  * @author https://github.com/kuangcp on 2019-11-25 20:17
  */
 @Slf4j
-public class KafkaConsumerMultiple {
+public final class KafkaConsumerMultiple {
 
   private Properties consumerConfig;
 
