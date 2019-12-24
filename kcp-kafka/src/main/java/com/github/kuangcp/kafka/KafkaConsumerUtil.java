@@ -25,7 +25,7 @@ import org.apache.kafka.common.errors.WakeupException;
  * @author https://github.com/kuangcp on 2019-11-13 09:35
  */
 @Slf4j
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public final class KafkaConsumerUtil {
 
   private static ObjectMapper objectMapper = new ObjectMapper();

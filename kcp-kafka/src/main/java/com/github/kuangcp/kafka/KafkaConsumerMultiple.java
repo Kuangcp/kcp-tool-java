@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toList;
 
 import com.github.kuangcp.kafka.common.EnhanceMessageExecutor;
 import com.github.kuangcp.kafka.common.Message;
+import com.github.kuangcp.kafka.config.ConfigConstant;
 import com.github.kuangcp.kafka.config.KafkaConfigManager;
 import java.lang.reflect.Array;
 import java.time.Duration;
@@ -62,17 +63,17 @@ public final class KafkaConsumerMultiple {
    */
   private static final int DEFAULT_DISPATCH_THREAD_NUM = 2;
 
-  // TODO
-  private List<EnhanceMessageExecutor> enhanceMessageExecutors;
+  // TODO 原先是Spring直接注入
+  private List<EnhanceMessageExecutor<String>> enhanceMessageExecutors;
 
   /**
    * 分发线程句柄
    */
   private final Set<TopicDispatchRunner> runners = new HashSet<>();
 
-//  @Override
+  //  @Override
   public void afterPropertiesSet() {
-    this.consumerConfig =  KafkaConfigManager.getConsumerConfig()
+    this.consumerConfig = KafkaConfigManager.getConsumerConfig()
         .orElseThrow(() -> new RuntimeException("加载Kafka消费者配置出错"));
 
     // 该方法用来在jvm中增加一个关闭的钩子。
@@ -88,17 +89,19 @@ public final class KafkaConsumerMultiple {
   public static boolean isNoneBlank(final CharSequence... css) {
     return !isAnyBlank(css);
   }
+
   public static boolean isAnyBlank(final CharSequence... css) {
     if (isEmpty(css)) {
       return false;
     }
-    for (final CharSequence cs : css){
+    for (final CharSequence cs : css) {
       if (isBlank(cs)) {
         return true;
       }
     }
     return false;
   }
+
   public static boolean isBlank(final CharSequence cs) {
     int strLen;
     if (cs == null || (strLen = cs.length()) == 0) {
@@ -111,9 +114,11 @@ public final class KafkaConsumerMultiple {
     }
     return true;
   }
+
   public static boolean isEmpty(final Object[] array) {
     return getLength(array) == 0;
   }
+
   public static int getLength(final Object array) {
     if (array == null) {
       return 0;
@@ -127,7 +132,7 @@ public final class KafkaConsumerMultiple {
 
   private void initConsumeMsg() {
     // 获取 topic 配置
-    List<EnhanceMessageExecutor> hasEnhanceMessageExecutors = Optional.ofNullable(
+    List<EnhanceMessageExecutor<String>> hasEnhanceMessageExecutors = Optional.ofNullable(
         enhanceMessageExecutors)
         .orElse(Collections.emptyList()).stream()
         .filter(m -> isNoneBlank(m.getTopic()))
@@ -137,24 +142,20 @@ public final class KafkaConsumerMultiple {
       return;
     }
 
-    Map<String, List<EnhanceMessageExecutor>> map = hasEnhanceMessageExecutors.stream()
+    Map<String, List<EnhanceMessageExecutor<String>>> map = hasEnhanceMessageExecutors.stream()
         .collect(Collectors.groupingBy(EnhanceMessageExecutor::getTopic));
     Set<String> topics = map.keySet();
 
     //创建线程池
-    int dispatchThreadCount = Optional.ofNullable(1)
-        .orElse(DEFAULT_DISPATCH_THREAD_NUM);
+    int dispatchThreadCount = Optional
+        .of(consumerConfig.getProperty(ConfigConstant.DEFAULT_DISPATCH_NUM))
+        .map(Integer::valueOf).orElse(DEFAULT_DISPATCH_THREAD_NUM);
     if (dispatchThreadCount <= 0) {
       dispatchThreadCount = DEFAULT_DISPATCH_THREAD_NUM;
     }
-    dispatchExecutor = this.buildTopicExecutor(
-        dispatchThreadCount,
-        "message-dispatcher"
-    );
-    handlerExecutor = this.buildTopicExecutor(
-        topics.size() * threadPerTopic,
-        "message-handler"
-    );
+
+    dispatchExecutor = this.buildTopicExecutor(dispatchThreadCount, "message-dispatcher");
+    handlerExecutor = this.buildTopicExecutor(topics.size() * threadPerTopic, "message-handler");
 
     // 创建分发线程
     List<String> topicList = new ArrayList<>(topics);
@@ -191,9 +192,10 @@ public final class KafkaConsumerMultiple {
   }
 
   private void createDispatchThread(List<String> topics,
-      Map<String, List<EnhanceMessageExecutor>> topic2MessageExecutorsMap) {
+      Map<String, List<EnhanceMessageExecutor<String>>> topic2MessageExecutorsMap) {
     KafkaConsumer<String, String> consumer = new KafkaConsumer<>(consumerConfig);
-    TopicDispatchRunner runner = new TopicDispatchRunner(topics, consumer, handlerExecutor, topic2MessageExecutorsMap);
+    TopicDispatchRunner runner = new TopicDispatchRunner(topics, consumer, handlerExecutor,
+        topic2MessageExecutorsMap);
     runners.add(runner);
     dispatchExecutor.execute(runner);
   }
@@ -209,19 +211,26 @@ public final class KafkaConsumerMultiple {
   }
 
   static class TopicDispatchRunner implements Runnable {
+
     @Getter
     private List<String> topics;
     private KafkaConsumer<String, String> consumer;
-    private Map<String, List<EnhanceMessageExecutor>> topicExecutorMapping;
+    private Map<String, List<EnhanceMessageExecutor<String>>> topicExecutorMapping;
+    private Map<EnhanceMessageExecutor<String>, ExecutorService> poolExecutorMap;
+
     private ExecutorService workers;
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
     TopicDispatchRunner(List<String> topics,
         KafkaConsumer<String, String> consumer,
         ExecutorService workers,
-        Map<String, List<EnhanceMessageExecutor>> topicExecutorMapping) {
+        Map<String, List<EnhanceMessageExecutor<String>>> topicExecutorMapping) {
       this.topics = topics;
       this.consumer = consumer;
+      poolExecutorMap = topicExecutorMapping.values().stream().flatMap(Collection::stream)
+          .collect(Collectors.toMap(v -> v, EnhanceMessageExecutor::getConsumerThreadPool,
+              (front, current) -> current));
+
       this.topicExecutorMapping = topicExecutorMapping;
       this.workers = workers;
     }
@@ -239,7 +248,8 @@ public final class KafkaConsumerMultiple {
             throw e;
           } catch (Throwable others) {
             // 未知异常，捕获记录后重试
-            log.error("Something goes wrong with topic - {} ... please check consumer logs ..", this.topics);
+            log.error("Something goes wrong with topic - {} ... please check consumer logs ..",
+                this.topics);
             log.error(others.getMessage(), others);
           }
         }
@@ -256,29 +266,27 @@ public final class KafkaConsumerMultiple {
     private void dispatch() {
       ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10000));
       for (ConsumerRecord<String, String> record : records) {
-        Message message = this.parseMessage(record);
+        Message<String> message = this.parseMessage(record);
         String topic = record.topic();
-        Collection<EnhanceMessageExecutor> messageHandlers = topicExecutorMapping.get(topic);
-        for (EnhanceMessageExecutor handler : messageHandlers) {
-          ExecutorService workers;
-          if (handler.getConsumerThreadPool() != null) {
-            workers = handler.getConsumerThreadPool();
-          } else {
-            workers = this.workers;
-          }
-          workers.execute(() -> {
-            log.info("[consumer-{}-{}]: Topic :{} Message: {}",
-                Thread.currentThread().getName(),
-                Thread.currentThread().getId(),
-                topic, record.value());
-            handler.execute(message);
-            log.info("[consumer-{}-{}]: Consume message from topic :{} Message: {} Done.",
-                Thread.currentThread().getName(),
-                Thread.currentThread().getId(),
-                topic, record.value());
-          });
-        }
+        Collection<EnhanceMessageExecutor<String>> messageHandlers = topicExecutorMapping
+            .get(topic);
 
+        for (EnhanceMessageExecutor<String> handler : messageHandlers) {
+          Optional.ofNullable(poolExecutorMap.get(handler)).orElse(this.workers)
+              .execute(() -> {
+                log.info("[consumer-{}-{}]: Topic :{} Message: {}",
+                    Thread.currentThread().getName(),
+                    Thread.currentThread().getId(),
+                    topic, record.value());
+
+                handler.execute(message);
+
+                log.info("[consumer-{}-{}]: Consume message from topic :{} Message: {} Done.",
+                    Thread.currentThread().getName(),
+                    Thread.currentThread().getId(),
+                    topic, record.value());
+              });
+        }
       }
     }
 
@@ -288,7 +296,7 @@ public final class KafkaConsumerMultiple {
       consumer.wakeup();
     }
 
-    private Message parseMessage(ConsumerRecord<String, String> record) {
+    private Message<String> parseMessage(ConsumerRecord<String, String> record) {
       return null;
 //      return JSON.parseObject(record.value(), Message.class, Feature.SortFeidFastMatch);
     }
@@ -312,6 +320,7 @@ public final class KafkaConsumerMultiple {
   }
 
   static class TopicThreadFactory implements ThreadFactory {
+
     private static final AtomicInteger POOL_NUMBER = new AtomicInteger(1);
     private final ThreadGroup group;
     private final AtomicInteger threadNumber = new AtomicInteger(1);
@@ -319,14 +328,12 @@ public final class KafkaConsumerMultiple {
 
     TopicThreadFactory(String poolName) {
       SecurityManager s = System.getSecurityManager();
-      group = (s != null) ? s.getThreadGroup() :
-          Thread.currentThread().getThreadGroup();
-      namePrefix = "pool-" + poolName + "-" +
-          POOL_NUMBER.getAndIncrement() +
-          "-thread-";
+      group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
+      namePrefix = "pool-" + poolName + "-" + POOL_NUMBER.getAndIncrement() + "-thread-";
     }
 
     @Override
+    @SuppressWarnings("NullableProblems")
     public Thread newThread(Runnable r) {
       Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
       if (t.isDaemon()) {
@@ -338,5 +345,4 @@ public final class KafkaConsumerMultiple {
       return t;
     }
   }
-
 }

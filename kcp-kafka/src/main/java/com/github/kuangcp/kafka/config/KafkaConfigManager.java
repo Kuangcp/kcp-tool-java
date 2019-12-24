@@ -30,14 +30,15 @@ public class KafkaConfigManager {
   }
 
   public static Optional<Properties> getConsumerConfig() {
-    Optional<String> serverOpt = Optional.ofNullable(load)
+    Optional<Properties> loadOpt = Optional.ofNullable(KafkaConfigManager.load);
+    Optional<String> serverOpt = loadOpt
         .map(v -> v.getProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
     if (!serverOpt.isPresent()) {
       return Optional.empty();
     }
 
     String groupId;
-    Optional<String> groupOpt = Optional.ofNullable(load)
+    Optional<String> groupOpt = loadOpt
         .map(v -> v.getProperty(ConsumerConfig.GROUP_ID_CONFIG));
     groupId = groupOpt.orElseGet(() -> "Group-" + UUID.randomUUID().toString());
 
@@ -49,6 +50,8 @@ public class KafkaConfigManager {
     config.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
     config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
     config.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, "30000");
+    config.put(ConfigConstant.DEFAULT_DISPATCH_NUM,
+        loadOpt.map(v -> v.getProperty(ConfigConstant.DEFAULT_DISPATCH_NUM)).orElse("2"));
     config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
     config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
     return Optional.of(config);
