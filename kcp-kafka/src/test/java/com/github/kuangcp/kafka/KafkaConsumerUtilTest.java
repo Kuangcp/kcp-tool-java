@@ -1,5 +1,6 @@
 package com.github.kuangcp.kafka;
 
+import com.github.kuangcp.kafka.common.MessageExecutor;
 import com.github.kuangcp.kafka.common.SimpleMessageExecutor;
 import com.github.kuangcp.kafka.domain.Topics;
 import com.github.kuangcp.kafka.executor.HiExecutor;
@@ -63,16 +64,35 @@ public class KafkaConsumerUtilTest {
       }
     };
 
-    KafkaConsumerUtil.consumerPlainText(Duration.ofMillis(1000),
-        Arrays.asList(oneExecutor, twoExecutor));
-
-    KafkaConsumerUtil.consumerPlainText(Duration.ofMillis(3000),
-        Arrays.asList(oneExecutor, twoExecutor));
+    KafkaConsumerUtil.consumerPlainText(Arrays.asList(oneExecutor, twoExecutor));
+    KafkaConsumerUtil.consumerPlainText(Arrays.asList(oneExecutor, twoExecutor));
   }
 
   @Test
-  public void testConsumerMessage() {
+  public void testConsumerMessage() throws InterruptedException {
     LoginMessageExecutor executor = new LoginMessageExecutor();
-    KafkaConsumerUtil.consumer(Duration.ofMillis(1000), Collections.singletonList(executor));
+    KafkaConsumerUtil.consumer(executor);
+    block(5000);
+  }
+
+  @Test
+  public void testConsumer() throws Exception {
+    KafkaConsumerUtil.consumerPlainText(new MessageExecutor<String>() {
+      @Override
+      public void execute(String message) {
+        System.out.println(message);
+      }
+
+      @Override
+      public String getTopic() {
+        return "OFC_REVERSE_DATA_TRACK";
+      }
+    });
+
+    block(5000);
+  }
+
+  private void block(long millis) throws InterruptedException {
+    Thread.currentThread().join(millis);
   }
 }

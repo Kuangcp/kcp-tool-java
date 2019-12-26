@@ -8,6 +8,7 @@ import com.github.kuangcp.kafka.common.MessageTopic;
 import com.github.kuangcp.kafka.config.KafkaConfigManager;
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
@@ -49,7 +50,29 @@ public final class KafkaConsumerUtil {
   /**
    * 消费Topic
    *
-   * @param duration 拉取间隔
+   * @param executor 执行器
+   * @param <E> executor
+   */
+  public static <E extends MessageExecutor<String> & MessageTopic>
+  void consumerPlainText(E executor) {
+    consumerPlainText(Duration.ofMillis(Integer.MAX_VALUE), Collections.singleton(executor));
+  }
+
+  /**
+   * 消费Topic
+   *
+   * @param executors 执行器
+   * @param <E> executor
+   */
+  public static <E extends MessageExecutor<String> & MessageTopic>
+  void consumerPlainText(Collection<E> executors) {
+    consumerPlainText(Duration.ofMillis(Integer.MAX_VALUE), executors);
+  }
+
+  /**
+   * 消费Topic
+   *
+   * @param duration poll timeout
    * @param executors 执行器
    * @param <E> executor
    */
@@ -80,24 +103,31 @@ public final class KafkaConsumerUtil {
     });
   }
 
-  private static <E> boolean validate(Duration duration, Collection<E> executors) {
-    if (Objects.isNull(duration) || Objects.isNull(executors) || executors.isEmpty()) {
-      log.warn("consumer param invalid");
-      return false;
-    }
 
-    if (Objects.nonNull(consumer)) {
-      log.warn("consumer has started");
-      return false;
-    }
-
-    return true;
+  /**
+   * 消费Topic
+   *
+   * @param executor 执行器
+   * @param <T> Message content 类型
+   */
+  public static <T> void consumer(GeneralMessageExecutor<T> executor) {
+    consumer(Duration.ofMillis(Integer.MAX_VALUE), Collections.singleton(executor));
   }
 
   /**
    * 消费Topic
    *
-   * @param duration 拉取间隔
+   * @param executors 执行器
+   * @param <T> Message content 类型
+   */
+  public static <T> void consumer(Collection<GeneralMessageExecutor<T>> executors) {
+    consumer(Duration.ofMillis(Integer.MAX_VALUE), executors);
+  }
+
+  /**
+   * 消费Topic
+   *
+   * @param duration poll timeout 如果拉取线程是主线程且希望尽早返回 这个值设置小一些，不管有没有拉取到消息都会将线程让出
    * @param executors 执行器
    * @param <T> Message content 类型
    */
@@ -150,6 +180,20 @@ public final class KafkaConsumerUtil {
         consumer.close();
       }
     });
+  }
+
+  private static <E> boolean validate(Duration duration, Collection<E> executors) {
+    if (Objects.isNull(duration) || Objects.isNull(executors) || executors.isEmpty()) {
+      log.warn("consumer param invalid");
+      return false;
+    }
+
+    if (Objects.nonNull(consumer)) {
+      log.warn("consumer has started");
+      return false;
+    }
+
+    return true;
   }
 
   /**
