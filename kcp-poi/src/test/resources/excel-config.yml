@@ -1,0 +1,12 @@
+---
+startColNum: 0
+startRowNum: 0
+titleLastRowNum: 1
+contentStartNum: 5
+dateFormat: "yyyy/MM/dd"
+titleFontSize: 12
+titleFontName: "Courier New"
+contentFontSize: 10
+contentFontName: "Arial"
+titleFontBold: false
+contentFontBold: false

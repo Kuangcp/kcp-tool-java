@@ -1,0 +1,13 @@
+plugins {
+  // Apply the java-library plugin to add support for Java Library
+  id 'java-library'
+}
+
+dependencies {
+  implementation libs['poi']
+  implementation libs['poi-ooxml']
+  implementation libs['jackson_core']
+  implementation libs['jackson_databind']
+  implementation libs['jackson-dataformat-yaml']
+  implementation project(':common-config')
+}

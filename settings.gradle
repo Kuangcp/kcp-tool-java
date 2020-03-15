@@ -9,4 +9,5 @@ include(
     , 'kcp-mock'
     , 'kcp-aop'
     , 'kcp-kafka'
+    , 'kcp-poi'
 )

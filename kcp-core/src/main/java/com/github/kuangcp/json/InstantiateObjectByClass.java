@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 public class InstantiateObjectByClass {
 
   private static final Date DEFAULT_DATE = new Date();
-  private static final BigDecimal DEFAULT_BIG_DECIMAL = new BigDecimal(0.99)
+  private static final BigDecimal DEFAULT_BIG_DECIMAL = BigDecimal.valueOf(0.99)
       .setScale(2, RoundingMode.HALF_EVEN);
 
   private static final Map<Class<?>, Object> typeMap = new HashMap<>();
@@ -31,7 +31,7 @@ public class InstantiateObjectByClass {
     typeMap.put(type, value);
   }
 
-  private static Optional<Object> get(Class type) {
+  private static Optional<Object> get(Class<?> type) {
     return Optional.ofNullable(typeMap.get(type));
   }
 
