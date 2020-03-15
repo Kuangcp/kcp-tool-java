@@ -5,8 +5,9 @@ ext {
       logback   : '1.2.3'
       , junit   : '4.12'
       , hamcrest: '1.3'
-      , jackson : '2.9.5'
-      , kafka   : '2.3.1'
+      , jackson : '2.10.3'
+      , kafka   : '2.4.1'
+      , poi     : '3.17'
 
   ]
   libs = [
@@ -33,7 +34,7 @@ ext {
 
       // kafka
       , "kafka-clients"          : "org.apache.kafka:kafka-clients:$ver.kafka"
-      , "poi"                    : "org.apache.poi:poi:3.17"
-      , "poi-ooxml"              : "org.apache.poi:poi-ooxml:3.17"
+      , "poi"                    : "org.apache.poi:poi:$ver.poi"
+      , "poi-ooxml"              : "org.apache.poi:poi-ooxml:$ver.poi"
   ]
 }
