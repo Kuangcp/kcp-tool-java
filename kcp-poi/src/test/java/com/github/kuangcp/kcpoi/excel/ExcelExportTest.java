@@ -11,9 +11,10 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.Before;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -23,14 +24,14 @@ import org.junit.Test;
  * @author kuangcp
  */
 @Ignore
+@Slf4j
 public class ExcelExportTest {
 
-  private String filePath = "/tmp/employee.xls";
-  private List<Employee> originList = new ArrayList<>();
+  private final String filePath = "/tmp/employee.xls";
 
-  @Before
-  public void init() {
-    for (int i = 0; i < 50000; i++) {
+  private List<Employee> buildData() {
+    List<Employee> originList = new ArrayList<>();
+    for (int i = 0; i < 500; i++) {
       Employee employee = Employee.builder()
           .QQ("QQ" + i)
           .name("name" + i)
@@ -43,26 +44,27 @@ public class ExcelExportTest {
           .build();
       originList.add(employee);
     }
+    return originList;
   }
 
   @Test
   public void testExports() {
     Workbook workbook = new HSSFWorkbook();
-    boolean results = ExcelExport.exportExcel(workbook, filePath, originList);
+    boolean results = ExcelExport.exportExcel(workbook, filePath, buildData());
     assertThat(results, equalTo(true));
   }
 
   @Test
   public void testOut() {
-    Workbook workbook = new HSSFWorkbook();
+    Workbook workbook = new SXSSFWorkbook();
     File f = new File(filePath);
     OutputStream out = null;
     try {
       out = new FileOutputStream(f);
-    } catch (FileNotFoundException e11) {
-      e11.printStackTrace();
+    } catch (FileNotFoundException e) {
+      log.error("", e);
     }
-    boolean results = ExcelExport.exportExcel(workbook, out, originList);
+    boolean results = ExcelExport.exportExcel(workbook, out, buildData());
     assertThat(results, equalTo(true));
   }
 }

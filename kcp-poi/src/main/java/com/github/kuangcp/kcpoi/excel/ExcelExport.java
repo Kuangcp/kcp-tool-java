@@ -21,14 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
@@ -44,8 +42,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 @Slf4j
 public final class ExcelExport {
 
-  private static MainConfig mainConfig = ConfigManager.getInstance();
-  private static Map<String, LoadCellValue> handlerMap = new HashMap<>(7);
+  private static final MainConfig mainConfig = ConfigManager.getInstance();
+  private static final Map<String, LoadCellValue> handlerMap = new HashMap<>(16);
 
   // 字典结合策略模式简化代码
   static {
@@ -56,6 +54,12 @@ public final class ExcelExport {
     handlerMap.put("Integer", new IntegerHandler());
     handlerMap.put("Double", new DoubleHandler());
     handlerMap.put("Float", new FloatHandler());
+
+    handlerMap.put("int", new IntegerHandler());
+    handlerMap.put("boolean", new BooleanHandler());
+    handlerMap.put("long", new LongHandler());
+    handlerMap.put("double", new DoubleHandler());
+    handlerMap.put("float", new FloatHandler());
   }
 
   private ExcelExport() {
@@ -135,8 +139,7 @@ public final class ExcelExport {
       //设置列头单元格的数据类型
 
       cellRowName.setCellType(CellType.STRING);
-      RichTextString text = new HSSFRichTextString(metaList.get(n).getTitle());
-      cellRowName.setCellValue(text);
+      cellRowName.setCellValue(metaList.get(n).getTitle());
       cellRowName.setCellStyle(columnTopStyle);
     }
   }
@@ -148,7 +151,7 @@ public final class ExcelExport {
     Object temp = obj[index];
     Cell cell = handlerMap.get(temp.getClass().getSimpleName()).loadValue(row, index, temp);
 
-    if (!Objects.isNull(cell)) {
+    if (Objects.nonNull(cell)) {
       cell.setCellStyle(style);
     }
   }

@@ -33,11 +33,11 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
  * @author kuangcp
  */
 @Slf4j
-public class ExcelImport {
+public final class ExcelImport {
 
   private static final int FIRST_SHEET_INDEX = 0;
   private static HSSFWorkbook wb;
-  private static MainConfig mainConfig = ConfigManager.getInstance();
+  private static final MainConfig mainConfig = ConfigManager.getInstance();
 
   /**
    * 根据Excel文件 将Excel转换成对象集合, 只读第一个Sheet
